@@ -1,0 +1,24 @@
+{
+  "name": "lootopia",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "(cd apps/api && bun run dev) & (cd apps/web && bun run dev)"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "dependencies": {
+    "api": "workspace:*",
+    "husky": "^9.1.7",
+    "web": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "concurrently": "^9.1.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

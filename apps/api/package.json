@@ -1,0 +1,36 @@
+{
+  "name": "api",
+  "scripts": {
+    "dev": "bun run --hot src/server.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "generate": "drizzle-kit generate",
+    "push": "drizzle-kit push",
+    "migrate": "bun src/db/migrate.ts",
+    "prepare": "husky"
+  },
+  "type": "module",
+  "dependencies": {
+    "@hono/eslint-config": "^1.1.1",
+    "@hono/zod-validator": "^0.4.3",
+    "@vitest/eslint-plugin": "^1.1.39",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.41.0",
+    "eslint-plugin-import": "^2.31.0",
+    "hono": "^4.7.5",
+    "pg": "^8.14.1",
+    "postgres": "^3.4.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "@types/bun": "latest",
+    "@types/pg": "^8.11.11",
+    "drizzle-kit": "^0.30.6",
+    "eslint": "^9.24.0",
+    "husky": "^9.1.7",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  }
+}
