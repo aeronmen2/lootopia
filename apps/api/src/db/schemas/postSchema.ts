@@ -1,5 +1,7 @@
+// src/db/schemas/postSchema.ts
 import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core"
 import { users } from "./userSchema"
+import { relations } from "drizzle-orm"
 
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),

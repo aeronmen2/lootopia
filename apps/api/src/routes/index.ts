@@ -1,10 +1,17 @@
 import { Hono } from "hono"
-import userRouter from "./userRoutes"
-import postRouter from "./postRoutes"
+import userRoutes from "./userRoutes"
+import postRoutes from "./postRoutes"
+import authRoutes from "./authRoutes"
+import { authMiddleware } from "../middleware/authMiddleware"
 
-const apiRouter = new Hono()
+const router = new Hono()
 
-apiRouter.route("/users", userRouter)
-apiRouter.route("/posts", postRouter)
+router.route("/auth", authRoutes)
 
-export default apiRouter
+router.use("/users", authMiddleware)
+router.route("/users", userRoutes)
+
+router.use("/posts", authMiddleware)
+router.route("/posts", postRoutes)
+
+export default router

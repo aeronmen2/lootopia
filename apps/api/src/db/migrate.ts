@@ -1,3 +1,4 @@
+// src/db/migrate.ts
 import { migrate } from "drizzle-orm/node-postgres/migrator"
 import { db } from "./index"
 
