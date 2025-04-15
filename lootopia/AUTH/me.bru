@@ -1,0 +1,18 @@
+meta {
+  name: ME
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{API_URL}}/me
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "alexisduchemann@icloud.com",
+    "password": "motdepasseTEST947@"
+  }
+}

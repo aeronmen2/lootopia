@@ -1,0 +1,19 @@
+meta {
+  name: SIGNUP
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{API_URL}}/signup
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "password": "SecurePass123"
+  }
+}
