@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm"
 import { db } from "../db"
 import type { User } from "../db/schemas/userSchema"
 import { users } from "../db/schemas/userSchema"
-import type { CreateUserDto, UpdateUserDto } from "../models/userModel"
+import type { UpdateUserDto } from "../models/userModel"
 
 export class UserService {
   static async findAll(): Promise<User[]> {
@@ -15,21 +15,9 @@ export class UserService {
     return result.length > 0 ? result[0] : null
   }
 
-  static async create(userData: CreateUserDto): Promise<User> {
-    const newUser = await db
-      .insert(users)
-      .values({
-        name: userData.name,
-        email: userData.email,
-      })
-      .returning()
-
-    return newUser[0]
-  }
-
   static async update(
     id: number,
-    userData: UpdateUserDto
+    userData: UpdateUserDto,
   ): Promise<User | null> {
     const updatedUser = await db
       .update(users)

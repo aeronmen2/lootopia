@@ -1,4 +1,3 @@
-// src/middlewares/roleMiddleware.ts
 import type { Context, Next } from "hono"
 
 type Role = "admin" | "user" | "moderator"

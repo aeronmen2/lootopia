@@ -1,4 +1,3 @@
-// src/db/schemas/sessionSchema.ts
 import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core"
 import { users } from "./userSchema"
 

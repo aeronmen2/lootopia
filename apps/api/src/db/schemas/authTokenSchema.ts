@@ -1,4 +1,3 @@
-// src/db/schemas/authTokenSchema.ts
 import { pgTable, serial, integer, text, timestamp } from "drizzle-orm/pg-core"
 import { users } from "./userSchema"
 

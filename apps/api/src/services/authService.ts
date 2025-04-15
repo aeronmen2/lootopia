@@ -1,9 +1,11 @@
-// src/services/authService.ts
 import crypto from "crypto"
-import { eq, and, gt } from "drizzle-orm"
+import { eq, and, gt, lt } from "drizzle-orm"
 import { db } from "../db"
 import { users } from "../db/schemas/userSchema"
+import type { User } from "../db/schemas/userSchema"
 import { sessions } from "../db/schemas/sessionSchema"
+import { authTokens } from "../db/schemas/authTokenSchema"
+import { emailService } from "./emailService"
 
 export class AuthService {
   private static readonly SALT_ROUNDS = {
@@ -11,9 +13,13 @@ export class AuthService {
     cost: 10,
   } as const
   private static readonly VERIFICATION_TOKEN_EXPIRY = 24 * 60 * 60 * 1000 // 24 hours
-  private static readonly RESET_TOKEN_EXPIRY = 60 * 60 * 1000 // 1 hour
+  private static readonly TOKEN_EXPIRY = 15 * 60 * 1000 // 15 minutes
+  private static readonly REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60 * 1000 // 30 days
+  private static readonly SESSION_EXPIRY = 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
 
   async signup(name: string, email: string, password: string) {
+    email = email.toLowerCase().trim()
+
     const existingUser = await db.query.users.findFirst({
       where: eq(users.email, email),
     })
@@ -26,6 +32,7 @@ export class AuthService {
       password,
       AuthService.SALT_ROUNDS,
     )
+
     const verificationToken = crypto.randomBytes(32).toString("hex")
     const verificationTokenExpiry = new Date(
       Date.now() + AuthService.VERIFICATION_TOKEN_EXPIRY,
@@ -42,19 +49,22 @@ export class AuthService {
       })
       .returning()
 
+    await emailService.sendVerificationEmail(email, verificationToken)
+
     return { userId: user.id, email: user.email }
   }
 
   async verifyEmail(token: string) {
     const user = await db.query.users.findFirst({
-      where: and(
-        eq(users.verificationToken, token),
-        gt(users.verificationTokenExpiry!, new Date()),
-      ),
+      where: eq(users.verificationToken, token),
     })
 
-    if (!user) {
-      throw new Error("Invalid or expired verification token")
+    if (!user || !user.verificationTokenExpiry) {
+      throw new Error("Invalid verification token")
+    }
+
+    if (new Date() > user.verificationTokenExpiry) {
+      throw new Error("Verification token expired")
     }
 
     await db
@@ -66,10 +76,12 @@ export class AuthService {
       })
       .where(eq(users.id, user.id))
 
-    return { verified: true }
+    return { success: true }
   }
 
   async login(email: string, password: string) {
+    email = email.toLowerCase().trim()
+
     const user = await db.query.users.findFirst({
       where: eq(users.email, email),
     })
@@ -91,23 +103,32 @@ export class AuthService {
       throw new Error("Email not verified")
     }
 
-    // Create a session
     const sessionId = crypto.randomUUID()
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+    const sessionExpiresAt = new Date(Date.now() + AuthService.SESSION_EXPIRY)
 
     await db.insert(sessions).values({
       userId: user.id,
       sessionId,
-      expiresAt,
+      expiresAt: sessionExpiresAt,
+    })
+
+    const token = crypto.randomBytes(32).toString("hex")
+    const refreshToken = crypto.randomBytes(32).toString("hex")
+    const tokenExpiresAt = new Date(Date.now() + AuthService.TOKEN_EXPIRY)
+
+    await db.insert(authTokens).values({
+      userId: user.id,
+      token,
+      refreshToken,
+      expiresAt: tokenExpiresAt,
     })
 
     return {
       sessionId,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
+      token,
+      refreshToken,
+      tokenExpiresAt,
+      user: this.sanitizeUser(user),
     }
   }
 
@@ -115,6 +136,42 @@ export class AuthService {
     await db.delete(sessions).where(eq(sessions.sessionId, sessionId))
 
     return { success: true }
+  }
+
+  async refreshToken(refreshToken: string) {
+    const tokenRecord = await db.query.authTokens.findFirst({
+      where: eq(authTokens.refreshToken, refreshToken),
+      with: {
+        user: true,
+      },
+    })
+
+    if (!tokenRecord) {
+      throw new Error("Invalid refresh token")
+    }
+
+    await db.delete(authTokens).where(eq(authTokens.id, tokenRecord.id))
+
+    const newToken = crypto.randomBytes(32).toString("hex")
+    const newRefreshToken = crypto.randomBytes(32).toString("hex")
+    const expiresAt = new Date(Date.now() + AuthService.TOKEN_EXPIRY)
+
+    const [newTokenRecord] = await db
+      .insert(authTokens)
+      .values({
+        userId: tokenRecord.userId,
+        token: newToken,
+        refreshToken: newRefreshToken,
+        expiresAt,
+      })
+      .returning()
+
+    return {
+      token: newTokenRecord.token,
+      refreshToken: newTokenRecord.refreshToken,
+      expiresAt: newTokenRecord.expiresAt,
+      user: this.sanitizeUser(tokenRecord.user),
+    }
   }
 
   async validateSession(sessionId: string) {
@@ -134,27 +191,45 @@ export class AuthService {
 
     return {
       userId: session.userId,
-      user: {
-        id: session.user.id,
-        name: session.user.name,
-        email: session.user.email,
+      user: this.sanitizeUser(session.user),
+    }
+  }
+
+  async validateToken(token: string) {
+    const tokenRecord = await db.query.authTokens.findFirst({
+      where: and(
+        eq(authTokens.token, token),
+        gt(authTokens.expiresAt, new Date()),
+      ),
+      with: {
+        user: true,
       },
+    })
+
+    if (!tokenRecord) {
+      return null
+    }
+
+    return {
+      userId: tokenRecord.userId,
+      user: this.sanitizeUser(tokenRecord.user),
     }
   }
 
   async requestPasswordReset(email: string) {
+    email = email.toLowerCase().trim()
+
     const user = await db.query.users.findFirst({
       where: eq(users.email, email),
     })
 
     if (!user) {
-      // Don't reveal that the user doesn't exist
       return { success: true }
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex")
     const resetTokenExpiry = new Date(
-      Date.now() + AuthService.RESET_TOKEN_EXPIRY,
+      Date.now() + AuthService.VERIFICATION_TOKEN_EXPIRY,
     )
 
     await db
@@ -172,14 +247,15 @@ export class AuthService {
 
   async resetPassword(token: string, newPassword: string) {
     const user = await db.query.users.findFirst({
-      where: and(
-        eq(users.resetPasswordToken!, token),
-        gt(users.resetPasswordTokenExpiry!, new Date()),
-      ),
+      where: eq(users.resetPasswordToken, token),
     })
 
-    if (!user) {
-      throw new Error("Invalid or expired reset token")
+    if (!user || !user.resetPasswordTokenExpiry) {
+      throw new Error("Invalid reset token")
+    }
+
+    if (new Date() > user.resetPasswordTokenExpiry) {
+      throw new Error("Reset token expired")
     }
 
     const passwordHash = await Bun.password.hash(
@@ -196,51 +272,61 @@ export class AuthService {
       })
       .where(eq(users.id, user.id))
 
-    // Invalidate all existing sessions for security
     await db.delete(sessions).where(eq(sessions.userId, user.id))
+    await db.delete(authTokens).where(eq(authTokens.userId, user.id))
 
     return { success: true }
   }
 
-  async changePassword(
-    userId: number,
-    currentPassword: string,
-    newPassword: string,
-  ) {
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, userId),
-    })
+  private sanitizeUser(
+    user: User,
+  ): Omit<
+    User,
+    | "passwordHash"
+    | "verificationToken"
+    | "verificationTokenExpiry"
+    | "resetPasswordToken"
+    | "resetPasswordTokenExpiry"
+  > {
+    const {
+      passwordHash,
+      verificationToken,
+      verificationTokenExpiry,
+      resetPasswordToken,
+      resetPasswordTokenExpiry,
+      ...safeUser
+    } = user
 
-    if (!user) {
-      throw new Error("User not found")
-    }
+    return safeUser
+  }
 
-    const isPasswordValid = await Bun.password.verify(
-      currentPassword,
-      user.passwordHash,
-    )
+  async cleanup() {
+    const now = new Date()
 
-    if (!isPasswordValid) {
-      throw new Error("Current password is incorrect")
-    }
+    await db
+      .delete(sessions)
+      .where(and(sessions.expiresAt, lt(sessions.expiresAt, now)))
 
-    const passwordHash = await Bun.password.hash(
-      newPassword,
-      AuthService.SALT_ROUNDS,
-    )
-
-    await db.update(users).set({ passwordHash }).where(eq(users.id, userId))
+    await db
+      .delete(authTokens)
+      .where(and(authTokens.expiresAt, lt(authTokens.expiresAt, now)))
 
     return { success: true }
   }
 
   async resendVerificationEmail(email: string) {
+    email = email.toLowerCase().trim()
+
     const user = await db.query.users.findFirst({
-      where: and(eq(users.email, email), eq(users.emailVerified, false)),
+      where: eq(users.email, email),
     })
 
     if (!user) {
       return { success: true }
+    }
+
+    if (user.emailVerified) {
+      throw new Error("Email is already verified")
     }
 
     const verificationToken = crypto.randomBytes(32).toString("hex")
@@ -255,6 +341,8 @@ export class AuthService {
         verificationTokenExpiry,
       })
       .where(eq(users.id, user.id))
+
+    await emailService.sendVerificationEmail(email, verificationToken)
 
     return { success: true }
   }

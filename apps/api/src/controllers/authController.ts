@@ -1,4 +1,3 @@
-// src/controllers/authController.ts
 import type { Context } from "hono"
 import { setCookie, getCookie } from "hono/cookie"
 import { authService } from "../services/authService"
@@ -21,19 +20,15 @@ export async function signup(c: Context) {
 
 export async function verifyEmail(c: Context) {
   try {
-    const { token } = c.req.query()
+    const { token } = c.req.param()
+    await authService.verifyEmail(token)
 
-    if (!token) {
-      return c.json({ success: false, error: "Token is required" }, 400)
-    }
-
-    const result = await authService.verifyEmail(token)
-
-    console.log(result)
+    console.log("im here")
+    console.log("token", token)
 
     return c.json({
       success: true,
-      message: "Email verified successfully",
+      message: "Email verified successfully. You can now log in.",
     })
   } catch (error: any) {
     return c.json({ success: false, error: error.message }, 400)
@@ -44,12 +39,13 @@ export async function login(c: Context) {
   try {
     const { email, password } = await c.req.json()
     const result = await authService.login(email, password)
-    // Set session cookie
-    setCookie(c, "session", result.sessionId, config.cookieSettings)
+
+    setCookie(c, "session", result.sessionId, {
+      ...config.cookieSettings,
+    })
 
     return c.json({
       success: true,
-      user: result.user,
     })
   } catch (error: any) {
     return c.json({ success: false, error: error.message }, 401)
@@ -63,13 +59,34 @@ export async function logout(c: Context) {
     if (sessionId) {
       await authService.logout(sessionId)
     }
-    // Clear the cookie
 
     setCookie(c, "session", "", { ...config.cookieSettings, maxAge: 0 })
 
     return c.json({ success: true })
   } catch (error: any) {
     return c.json({ success: false, error: error.message }, 500)
+  }
+}
+
+export async function refreshToken(c: Context) {
+  try {
+    const { refreshToken } = await c.req.json()
+
+    if (!refreshToken) {
+      return c.json({ success: false, error: "Refresh token is required" }, 400)
+    }
+
+    const result = await authService.refreshToken(refreshToken)
+
+    return c.json({
+      success: true,
+      token: result.token,
+      refreshToken: result.refreshToken,
+      expiresAt: result.expiresAt,
+      user: result.user,
+    })
+  } catch (error: any) {
+    return c.json({ success: false, error: error.message }, 401)
   }
 }
 
@@ -81,7 +98,7 @@ export async function requestPasswordReset(c: Context) {
     return c.json({
       success: true,
       message:
-        "If an account with that email exists, a password reset link has been sent",
+        "If your email exists in our system, you will receive a password reset link shortly",
     })
   } catch (error: any) {
     return c.json({ success: false, error: error.message }, 500)
@@ -95,26 +112,25 @@ export async function resetPassword(c: Context) {
 
     return c.json({
       success: true,
-      message: "Password has been reset successfully",
+      message:
+        "Password has been reset successfully. You can now log in with your new password.",
     })
   } catch (error: any) {
     return c.json({ success: false, error: error.message }, 400)
   }
 }
 
-export async function changePassword(c: Context) {
+export async function getCurrentUser(c: Context) {
   try {
     const userId = c.get("userId")
-    const { currentPassword, newPassword } = await c.req.json()
-
-    await authService.changePassword(userId, currentPassword, newPassword)
+    const user = c.get("user")
 
     return c.json({
       success: true,
-      message: "Password changed successfully",
+      user: user || { id: userId },
     })
   } catch (error: any) {
-    return c.json({ success: false, error: error.message }, 400)
+    return c.json({ success: false, error: error.message }, 500)
   }
 }
 
@@ -126,22 +142,9 @@ export async function resendVerificationEmail(c: Context) {
     return c.json({
       success: true,
       message:
-        "If your account exists and is not verified, a new verification email has been sent",
+        "If your email exists and is not verified, you will receive a verification link shortly",
     })
   } catch (error: any) {
-    return c.json({ success: false, error: error.message }, 500)
-  }
-}
-
-export async function getCurrentUser(c: Context) {
-  try {
-    const userId = c.get("userId")
-
-    return c.json({
-      success: true,
-      user: { id: userId },
-    })
-  } catch (error: any) {
-    return c.json({ success: false, error: error.message }, 500)
+    return c.json({ success: false, error: error.message }, 400)
   }
 }
