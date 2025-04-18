@@ -5,15 +5,50 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1744148291036,
-      "tag": "0000_ordinary_warbird",
+      "when": 1744828099650,
+      "tag": "0000_tidy_quasar",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1744719134524,
-      "tag": "0001_bored_sunfire",
+      "when": 1744833751291,
+      "tag": "0001_needy_wiccan",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1744833791320,
+      "tag": "0002_windy_squadron_supreme",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1744833846740,
+      "tag": "0003_panoramic_domino",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1744879530118,
+      "tag": "0004_silly_sebastian_shaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1744879610694,
+      "tag": "0005_overjoyed_boomerang",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1744879656669,
+      "tag": "0006_perpetual_supreme_intelligence",
       "breakpoints": true
     }
   ]

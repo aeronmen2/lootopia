@@ -9,14 +9,14 @@ export class UserService {
     return await db.select().from(users)
   }
 
-  static async findById(id: number): Promise<User | null> {
+  static async findById(id: string): Promise<User | null> {
     const result = await db.select().from(users).where(eq(users.id, id))
 
     return result.length > 0 ? result[0] : null
   }
 
   static async update(
-    id: number,
+    id: string,
     userData: UpdateUserDto,
   ): Promise<User | null> {
     const updatedUser = await db
@@ -31,7 +31,7 @@ export class UserService {
     return updatedUser.length > 0 ? updatedUser[0] : null
   }
 
-  static async delete(id: number): Promise<User | null> {
+  static async delete(id: string): Promise<User | null> {
     const deletedUser = await db
       .delete(users)
       .where(eq(users.id, id))

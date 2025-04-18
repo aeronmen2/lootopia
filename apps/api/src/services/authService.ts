@@ -14,8 +14,7 @@ export class AuthService {
   } as const
   private static readonly VERIFICATION_TOKEN_EXPIRY = 24 * 60 * 60 * 1000 // 24 hours
   private static readonly TOKEN_EXPIRY = 15 * 60 * 1000 // 15 minutes
-  private static readonly REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60 * 1000 // 30 days
-  private static readonly SESSION_EXPIRY = 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+  private static readonly SESSION_EXPIRY = 60 * 1000 // 1 minute in milliseconds
 
   async signup(name: string, email: string, password: string) {
     email = email.toLowerCase().trim()
@@ -42,6 +41,8 @@ export class AuthService {
       .insert(users)
       .values({
         name,
+        lasname: "",
+        username: name.toLowerCase().replace(/\s+/g, ""),
         email,
         passwordHash,
         verificationToken,
@@ -49,7 +50,7 @@ export class AuthService {
       })
       .returning()
 
-    await emailService.sendVerificationEmail(email, verificationToken)
+    void emailService.sendVerificationEmail(email, verificationToken)
 
     return { userId: user.id, email: user.email }
   }
@@ -104,7 +105,17 @@ export class AuthService {
     }
 
     const sessionId = crypto.randomUUID()
-    const sessionExpiresAt = new Date(Date.now() + AuthService.SESSION_EXPIRY)
+
+    const now = new Date()
+    const sessionExpiresAt = new Date(
+      now.getTime() + AuthService.SESSION_EXPIRY,
+    )
+    // Debug timestamps
+    console.log("Current time (local):", now.toString())
+    console.log("Current time (UTC):", now.toISOString())
+    console.log("SESSION_EXPIRY (ms):", AuthService.SESSION_EXPIRY)
+    console.log("Session expires at (local):", sessionExpiresAt.toString())
+    console.log("Session expires at (UTC):", sessionExpiresAt.toISOString())
 
     await db.insert(sessions).values({
       userId: user.id,
@@ -278,26 +289,24 @@ export class AuthService {
     return { success: true }
   }
 
-  private sanitizeUser(
-    user: User,
-  ): Omit<
-    User,
-    | "passwordHash"
-    | "verificationToken"
-    | "verificationTokenExpiry"
-    | "resetPasswordToken"
-    | "resetPasswordTokenExpiry"
-  > {
-    const {
-      passwordHash,
-      verificationToken,
-      verificationTokenExpiry,
-      resetPasswordToken,
-      resetPasswordTokenExpiry,
-      ...safeUser
-    } = user
-
-    return safeUser
+  private sanitizeUser(user: User) {
+    return {
+      id: user.id,
+      name: user.name,
+      lasname: user.lasname,
+      username: user.username,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      phoneNumber: user.phoneNumber,
+      country: user.country,
+      region: user.region,
+      city: user.city,
+      address: user.address,
+      photoUrl: user.photoUrl,
+      bio: user.bio,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }
   }
 
   async cleanup() {

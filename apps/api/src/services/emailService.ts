@@ -128,7 +128,6 @@ export class EmailService {
       </html>
     `
   }
-
   async sendVerificationEmail(email: string, token: string): Promise<boolean> {
     const verificationUrl = `${config.appUrl}/api/auth/verify-email/${token}`
 
@@ -146,12 +145,18 @@ export class EmailService {
       <p style="margin-top: 25px;">This verification link will expire in 24 hours.</p>
     `
 
-    return this.sendEmail({
+    const result = await this.sendEmail({
       to: email,
       subject: "Verify Your Email Address",
       text: `Please verify your email address by clicking the following link: ${verificationUrl}\nThis link will expire in 24 hours.`,
       html: this.getBaseTemplate(emailContent),
     })
+
+    if (result) {
+      console.log("Email sent")
+    }
+
+    return result
   }
 
   async sendPasswordResetEmail(email: string, token: string): Promise<boolean> {

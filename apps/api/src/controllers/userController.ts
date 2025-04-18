@@ -17,7 +17,7 @@ export class UserController {
 
   static async getById(c: Context) {
     try {
-      const id = Number(c.req.param("id"))
+      const id = String(c.req.param("id"))
       const user = await UserService.findById(id)
 
       if (!user) {
@@ -34,7 +34,7 @@ export class UserController {
 
   static async update(c: Context) {
     try {
-      const id = Number(c.req.param("id"))
+      const id = String(c.req.param("id"))
       const body = await c.req.json()
       const validatedData = UserModel.validateUpdate(body)
 
@@ -61,7 +61,7 @@ export class UserController {
 
   static async delete(c: Context) {
     try {
-      const id = Number(c.req.param("id"))
+      const id = String(c.req.param("id"))
       const deletedUser = await UserService.delete(id)
 
       if (!deletedUser) {
