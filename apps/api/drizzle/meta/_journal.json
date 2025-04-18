@@ -50,6 +50,20 @@
       "when": 1744879656669,
       "tag": "0006_perpetual_supreme_intelligence",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1744962795555,
+      "tag": "0007_nasty_warhawk",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1744963812401,
+      "tag": "0008_adorable_carnage",
+      "breakpoints": true
     }
   ]
 }

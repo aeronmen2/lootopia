@@ -14,7 +14,7 @@ export class AuthService {
   } as const
   private static readonly VERIFICATION_TOKEN_EXPIRY = 24 * 60 * 60 * 1000 // 24 hours
   private static readonly TOKEN_EXPIRY = 15 * 60 * 1000 // 15 minutes
-  private static readonly SESSION_EXPIRY = 60 * 1000 // 1 minute in milliseconds
+  private static readonly SESSION_EXPIRY = 24 * 60 * 60 * 1000 // 24 hours
 
   async signup(name: string, email: string, password: string) {
     email = email.toLowerCase().trim()
@@ -167,6 +167,15 @@ export class AuthService {
     const newRefreshToken = crypto.randomBytes(32).toString("hex")
     const expiresAt = new Date(Date.now() + AuthService.TOKEN_EXPIRY)
 
+    const sessionId = crypto.randomUUID()
+    const sessionExpiresAt = new Date(Date.now() + AuthService.SESSION_EXPIRY)
+
+    await db.insert(sessions).values({
+      userId: tokenRecord.userId,
+      sessionId,
+      expiresAt: sessionExpiresAt,
+    })
+
     const [newTokenRecord] = await db
       .insert(authTokens)
       .values({
@@ -181,6 +190,7 @@ export class AuthService {
       token: newTokenRecord.token,
       refreshToken: newTokenRecord.refreshToken,
       expiresAt: newTokenRecord.expiresAt,
+      sessionId, // Add the sessionId to the return value
       user: this.sanitizeUser(tokenRecord.user),
     }
   }

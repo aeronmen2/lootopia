@@ -59,6 +59,11 @@ export async function login(c: Context) {
       ...config.cookieSettings,
     })
 
+    setCookie(c, "refreshToken", result.refreshToken, {
+      ...config.cookieSettings,
+      httpOnly: true,
+    })
+
     return c.json(
       {
         status: "success",
@@ -108,7 +113,7 @@ export async function logout(c: Context) {
 
 export async function refreshToken(c: Context) {
   try {
-    const { refreshToken } = await c.req.json()
+    const refreshToken = getCookie(c, "refreshToken")
 
     if (!refreshToken) {
       return c.json(
@@ -122,13 +127,23 @@ export async function refreshToken(c: Context) {
 
     const result = await authService.refreshToken(refreshToken)
 
+    // Set the new session cookie
+    setCookie(c, "session", result.sessionId, {
+      ...config.cookieSettings,
+    })
+
+    // Set the new refresh token cookie
+    setCookie(c, "refreshToken", result.refreshToken, {
+      ...config.cookieSettings,
+      httpOnly: true,
+    })
+
     return c.json(
       {
         status: "success",
         message: "Token refreshed successfully",
         data: {
           token: result.token,
-          refreshToken: result.refreshToken,
           expiresAt: result.expiresAt,
           user: result.user,
         },

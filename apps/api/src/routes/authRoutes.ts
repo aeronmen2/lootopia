@@ -17,10 +17,6 @@ const loginSchema = z.object({
   password: z.string(),
 })
 
-const refreshTokenSchema = z.object({
-  refreshToken: z.string(),
-})
-
 const requestPasswordResetSchema = z.object({
   email: z.string().email(),
 })
@@ -33,11 +29,7 @@ const resetPasswordSchema = z.object({
 router.post("/signup", zValidator("json", signupSchema), authController.signup)
 router.get("/verify-email/:token", authController.verifyEmail)
 router.post("/login", zValidator("json", loginSchema), authController.login)
-router.post(
-  "/refresh-token",
-  zValidator("json", refreshTokenSchema),
-  authController.refreshToken,
-)
+router.post("/refresh-token", authController.refreshToken)
 router.post(
   "/request-password-reset",
   zValidator("json", requestPasswordResetSchema),
