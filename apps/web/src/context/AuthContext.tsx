@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react"
 import { User, LoginCredentials } from "../api/auth"
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null
   loading: boolean
   isConnected: boolean
-  login: (credentials: LoginCredentials) => Promise<any>
+  login: (credentials: LoginCredentials) => Promise<unknown>
   logout: () => Promise<void>
   refreshUser: () => Promise<User | null>
 }

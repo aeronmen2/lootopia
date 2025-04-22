@@ -1,10 +1,20 @@
+import { createFileRoute, redirect } from "@tanstack/react-router"
 import { LoginForm } from "@/components/auth/LoginForm"
-import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/login")({
-  component: RouteComponent,
+  beforeLoad: async ({ context }) => {
+    // Wait for auth loading to finish
+    if (context.auth.loading) {
+      return
+    }
+    // If user is already connected, redirect to dashboard
+    if (context.auth.isConnected) {
+      throw redirect({ to: "/dashboard/route-a" })
+    }
+  },
+  component: LoginComponent,
 })
 
-function RouteComponent() {
+function LoginComponent() {
   return <LoginForm />
 }

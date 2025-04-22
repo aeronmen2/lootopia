@@ -12,9 +12,12 @@ export interface User {
 }
 
 export interface AuthResponse {
-  user: User
-  token?: string
-  message?: string
+  status: string
+  message: string
+  data?: {
+    userId?: string
+    user?: User
+  }
 }
 
 export const authApi = {
@@ -25,27 +28,31 @@ export const authApi = {
     })
   },
 
-  logout: async (): Promise<{ success: boolean }> => {
+  signup: async (
+    name: string,
+    email: string,
+    password: string,
+  ): Promise<AuthResponse> => {
+    return api("/api/auth/signup", {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        email: email.toLowerCase(),
+        password,
+      }),
+    })
+  },
+
+  logout: async (): Promise<{ status: string; message: string }> => {
     return api("/api/auth/logout", {
       method: "POST",
     })
   },
 
-  getCurrentUser: async (): Promise<User> => {
-    return api("/api/auth/me")
-  },
-
-  refreshToken: async (
-    refreshToken: string,
-  ): Promise<{
-    token: string
-    refreshToken: string
-    expiresAt: string
-    user: User
+  getCurrentUser: async (): Promise<{
+    status: string
+    data: { user: User }
   }> => {
-    return api("/api/auth/refresh-token", {
-      method: "POST",
-      body: JSON.stringify({ refreshToken }),
-    })
+    return api("/api/auth/me")
   },
 }

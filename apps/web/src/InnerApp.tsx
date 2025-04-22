@@ -4,5 +4,9 @@ import { useAuth } from "./hooks/useAuth"
 
 export function InnerApp() {
   const auth = useAuth()
+  const { loading } = useAuth()
+
+  if (loading) return <div></div>
+
   return <RouterProvider router={router} context={{ auth }} />
 }

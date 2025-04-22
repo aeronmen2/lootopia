@@ -12,26 +12,15 @@ import { PasswordFieldWithIcon } from "./PasswordFieldWithIcon"
 import { useAuth } from "@/hooks/useAuth"
 
 export function LoginForm() {
-  const { login } = useAuth()
+  const { login, refreshUser } = useAuth()
   const navigate = useNavigate()
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  })
-
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-    general: "",
-  })
-
+  const [form, setForm] = useState({ email: "", password: "" })
+  const [errors, setErrors] = useState({ email: "", password: "", general: "" })
   const [isLoading, setIsLoading] = useState(false)
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
+  const validateEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target
@@ -40,43 +29,39 @@ export function LoginForm() {
   }
 
   function validateForm() {
-    const newErrors: typeof errors = { email: "", password: "", general: "" }
+    const newErrors = { email: "", password: "", general: "" }
     let isValid = true
 
     if (!validateEmail(form.email)) {
       newErrors.email = "Please enter a valid email address"
       isValid = false
     }
-
-    if (form.password.length < 1) {
+    if (!form.password) {
       newErrors.password = "Please enter your password"
       isValid = false
     }
-
-    setErrors({ ...newErrors, general: "" })
+    setErrors(newErrors)
     return isValid
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-
-    if (!validateForm()) {
-      return
-    }
+    if (!validateForm()) return
 
     setIsLoading(true)
-
+    setErrors({ ...errors, general: "" })
     try {
-      await login({
-        email: form.email,
-        password: form.password,
-      })
-      navigate({ to: "/dashboard" }) // Change route as needed
+      const result = await login({ email: form.email, password: form.password })
+      if (result?.status === "success") {
+        await refreshUser()
+        navigate({ to: "/dashboard" })
+      } else {
+        setErrors({ ...errors, general: "Login failed. Please try again." })
+      }
     } catch (error: any) {
       setErrors({
         ...errors,
-        general:
-          error?.message || "Invalid email or password. Please try again.",
+        general: error?.message || "Login failed. Please try again.",
       })
     } finally {
       setIsLoading(false)

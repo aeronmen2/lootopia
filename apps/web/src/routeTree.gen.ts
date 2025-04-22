@@ -8,105 +8,185 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from "@tanstack/react-router"
+
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as SignupImport } from './routes/signup'
-import { Route as LoginImport } from './routes/login'
-import { Route as IndexImport } from './routes/index'
-import { Route as DashboardIndexImport } from './routes/dashboard/index'
+import { Route as rootRoute } from "./routes/__root"
+import { Route as SignupImport } from "./routes/signup"
+import { Route as LoginImport } from "./routes/login"
+import { Route as IndexImport } from "./routes/index"
+import { Route as DashboardIndexImport } from "./routes/dashboard/index"
+import { Route as VerifyEmailImport } from "./routes/verify.$email"
+import { Route as DashboardlayoutImport } from "./routes/dashboard/__layoutt"
+
+// Create Virtual Routes
+
+const DashboardImport = createFileRoute("/dashboard")()
 
 // Create/Update Routes
 
+const DashboardRoute = DashboardImport.update({
+  id: "/dashboard",
+  path: "/dashboard",
+  getParentRoute: () => rootRoute,
+} as any)
+
 const SignupRoute = SignupImport.update({
-  id: '/signup',
-  path: '/signup',
+  id: "/signup",
+  path: "/signup",
   getParentRoute: () => rootRoute,
 } as any)
 
 const LoginRoute = LoginImport.update({
-  id: '/login',
-  path: '/login',
+  id: "/login",
+  path: "/login",
   getParentRoute: () => rootRoute,
 } as any)
 
 const IndexRoute = IndexImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRoute,
 } as any)
 
 const DashboardIndexRoute = DashboardIndexImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
+  id: "/",
+  path: "/",
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const VerifyEmailRoute = VerifyEmailImport.update({
+  id: "/verify/$email",
+  path: "/verify/$email",
   getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardlayoutRoute = DashboardlayoutImport.update({
+  id: "/__layout",
+  getParentRoute: () => DashboardRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
+    "/": {
+      id: "/"
+      path: "/"
+      fullPath: "/"
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
+    "/login": {
+      id: "/login"
+      path: "/login"
+      fullPath: "/login"
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
+    "/signup": {
+      id: "/signup"
+      path: "/signup"
+      fullPath: "/signup"
       preLoaderRoute: typeof SignupImport
       parentRoute: typeof rootRoute
     }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardIndexImport
+    "/dashboard": {
+      id: "/dashboard"
+      path: "/dashboard"
+      fullPath: "/dashboard"
+      preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
+    }
+    "/dashboard/__layout": {
+      id: "/dashboard/__layout"
+      path: "/dashboard"
+      fullPath: "/dashboard"
+      preLoaderRoute: typeof DashboardlayoutImport
+      parentRoute: typeof DashboardRoute
+    }
+    "/verify/$email": {
+      id: "/verify/$email"
+      path: "/verify/$email"
+      fullPath: "/verify/$email"
+      preLoaderRoute: typeof VerifyEmailImport
+      parentRoute: typeof rootRoute
+    }
+    "/dashboard/": {
+      id: "/dashboard/"
+      path: "/"
+      fullPath: "/dashboard/"
+      preLoaderRoute: typeof DashboardIndexImport
+      parentRoute: typeof DashboardImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface DashboardRouteChildren {
+  DashboardlayoutRoute: typeof DashboardlayoutRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardlayoutRoute: DashboardlayoutRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
-  '/dashboard': typeof DashboardIndexRoute
+  "/": typeof IndexRoute
+  "/login": typeof LoginRoute
+  "/signup": typeof SignupRoute
+  "/dashboard": typeof DashboardlayoutRoute
+  "/verify/$email": typeof VerifyEmailRoute
+  "/dashboard/": typeof DashboardIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
-  '/dashboard': typeof DashboardIndexRoute
+  "/": typeof IndexRoute
+  "/login": typeof LoginRoute
+  "/signup": typeof SignupRoute
+  "/dashboard": typeof DashboardIndexRoute
+  "/verify/$email": typeof VerifyEmailRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
-  '/dashboard/': typeof DashboardIndexRoute
+  "/": typeof IndexRoute
+  "/login": typeof LoginRoute
+  "/signup": typeof SignupRoute
+  "/dashboard": typeof DashboardRouteWithChildren
+  "/dashboard/__layout": typeof DashboardlayoutRoute
+  "/verify/$email": typeof VerifyEmailRoute
+  "/dashboard/": typeof DashboardIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/signup' | '/dashboard'
+  fullPaths:
+    | "/"
+    | "/login"
+    | "/signup"
+    | "/dashboard"
+    | "/verify/$email"
+    | "/dashboard/"
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup' | '/dashboard'
-  id: '__root__' | '/' | '/login' | '/signup' | '/dashboard/'
+  to: "/" | "/login" | "/signup" | "/dashboard" | "/verify/$email"
+  id:
+    | "__root__"
+    | "/"
+    | "/login"
+    | "/signup"
+    | "/dashboard"
+    | "/dashboard/__layout"
+    | "/verify/$email"
+    | "/dashboard/"
   fileRoutesById: FileRoutesById
 }
 
@@ -114,14 +194,16 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
+  VerifyEmailRoute: typeof VerifyEmailRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardRoute: DashboardRouteWithChildren,
+  VerifyEmailRoute: VerifyEmailRoute,
 }
 
 export const routeTree = rootRoute
@@ -137,7 +219,8 @@ export const routeTree = rootRoute
         "/",
         "/login",
         "/signup",
-        "/dashboard/"
+        "/dashboard",
+        "/verify/$email"
       ]
     },
     "/": {
@@ -149,8 +232,23 @@ export const routeTree = rootRoute
     "/signup": {
       "filePath": "signup.tsx"
     },
+    "/dashboard": {
+      "filePath": "dashboard",
+      "children": [
+        "/dashboard/__layout",
+        "/dashboard/"
+      ]
+    },
+    "/dashboard/__layout": {
+      "filePath": "dashboard/__layout.tsx",
+      "parent": "/dashboard"
+    },
+    "/verify/$email": {
+      "filePath": "verify.$email.tsx"
+    },
     "/dashboard/": {
-      "filePath": "dashboard/index.tsx"
+      "filePath": "dashboard/index.tsx",
+      "parent": "/dashboard"
     }
   }
 }

@@ -14,7 +14,7 @@ export class AuthService {
   } as const
   private static readonly VERIFICATION_TOKEN_EXPIRY = 24 * 60 * 60 * 1000 // 24 hours
   private static readonly TOKEN_EXPIRY = 15 * 60 * 1000 // 15 minutes
-  private static readonly SESSION_EXPIRY = 24 * 60 * 60 * 1000 // 24 hours
+  private static readonly SESSION_EXPIRY = 5 * 60 * 1000 // 5 minutes
 
   async signup(name: string, email: string, password: string) {
     email = email.toLowerCase().trim()

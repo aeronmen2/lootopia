@@ -92,6 +92,11 @@ export async function logout(c: Context) {
     }
 
     setCookie(c, "session", "", { ...config.cookieSettings, maxAge: 0 })
+    setCookie(c, "refreshToken", "", {
+      ...config.cookieSettings,
+      maxAge: 0,
+      httpOnly: true,
+    })
 
     return c.json(
       {
