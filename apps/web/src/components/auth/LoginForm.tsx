@@ -10,9 +10,11 @@ import { OrDivider } from "./OrDivider"
 import { GoogleSignInButton } from "./button/GoogleButton"
 import { PasswordFieldWithIcon } from "./PasswordFieldWithIcon"
 import { useAuth } from "@/hooks/useAuth"
+import useToast from '@/hooks/useToast';
 
 export function LoginForm() {
   const { login, refreshUser } = useAuth()
+  const { toast } = useToast();
   const navigate = useNavigate()
 
   const [form, setForm] = useState({ email: "", password: "" })
@@ -51,18 +53,32 @@ export function LoginForm() {
     setIsLoading(true)
     setErrors({ ...errors, general: "" })
     try {
-      const result = await login({ email: form.email, password: form.password })
+      const result = await login({
+        email: form.email,
+        password: form.password,
+      })
       if (result?.status === "success") {
         await refreshUser()
-        navigate({ to: "/dashboard" })
-      } else {
-        setErrors({ ...errors, general: "Login failed. Please try again." })
+        toast.success({
+          title: 'Success!',
+          message: 'Logged in successfully!',
+          autoClose: 3000,
+          position: 'top-right',
+        });
+        navigate({ to: "/dashboard" }) // Change route as needed
       }
     } catch (error: any) {
       setErrors({
         ...errors,
-        general: error?.message || "Login failed. Please try again.",
+        general:
+          error?.message || "Login failed. Please try again.",
       })
+      toast.error({
+        title: 'Error!',
+        message: error?.message || "Login failed. Please try again.",
+        autoClose: 3000,
+        position: 'top-right',
+      });
     } finally {
       setIsLoading(false)
     }

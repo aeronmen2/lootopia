@@ -25,6 +25,7 @@
     "nodemailer": "^6.10.1",
     "pg": "^8.14.1",
     "postgres": "^3.4.5",
+    "react-toastify": "^11.0.5",
     "resend": "^4.2.0"
   },
   "devDependencies": {
