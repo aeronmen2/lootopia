@@ -22,7 +22,15 @@ app.use(
   }),
 )
 
-app.use(csrf({ origin: "http://localhost:5173" }))
+app.use("*", async (c, next) => {
+  // Skip CSRF for API routes
+  if (c.req.path.startsWith("/api")) {
+    return next()
+  }
+
+  // Otherwise apply CSRF
+  return csrf({ origin: "http://localhost:5173" })(c, next)
+})
 
 app.get("/", (c) => {
   return c.json({ message: "👋 Hello, world!" })
