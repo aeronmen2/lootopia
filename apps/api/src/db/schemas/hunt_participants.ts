@@ -20,3 +20,6 @@ export const huntParticipants = pgTable(
     uniqueHuntUser: unique().on(table.huntId, table.userId),
   })
 )
+
+export type HuntParticipant = typeof huntParticipants.$inferSelect
+export type HuntParticipantInsert = typeof huntParticipants.$inferInsert

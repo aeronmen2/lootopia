@@ -1,19 +1,60 @@
 // huntService.ts
-import { eq } from "drizzle-orm"
+import { eq, count } from "drizzle-orm"
 import { db } from "../db"
 import { hunts } from "../db/schemas/hunts"
 import type {Hunt} from "../db/schemas/hunts";
 import type { HuntDto } from "../models/hunts"
+import { huntParticipants } from "../db/schemas/hunt_participants";
+export interface HuntWithParticipants extends Hunt {
+  nbParticipants: number
+}
 
 export class HuntService {
-  static async findAll(): Promise<Hunt[]> {
-    return await db.select().from(hunts)
+  static async findAll(): Promise<HuntWithParticipants[]> {
+    const result = await db
+      .select({
+        hunt: hunts,
+        nbParticipants: count(huntParticipants.userId).as("nbParticipants"),
+      })
+      .from(hunts)
+      .leftJoin(huntParticipants, eq(hunts.id, huntParticipants.huntId))
+      .groupBy(hunts.id);
+  
+    return result.map(({ hunt, nbParticipants }) => ({
+      ...hunt,
+      nbParticipants,
+    }));
   }
 
-  static async findById(id: string): Promise<Hunt | null> {
-    const result = await db.select().from(hunts).where(eq(hunts.id, id))
+  static async findById(id: string): Promise<HuntWithParticipants | null> {
+    const result = await db.select({
+      hunt: hunts,
+      nbParticipants: count(huntParticipants.userId).as("nbParticipants"),
+    })
+    .from(hunts).where(eq(hunts.id, id))
+    .leftJoin(huntParticipants, eq(hunts.id, huntParticipants.huntId))
+    .groupBy(hunts.id);
 
-    return result[0] ?? null
+    return result[0]
+      ? { ...result[0].hunt, nbParticipants: result[0].nbParticipants }
+      : null;
+  }
+
+  static async findByOrganizerId(organizerId: string): Promise<HuntWithParticipants[]> {
+    const result = await db
+      .select({
+        hunt: hunts,
+        nbParticipants: count(huntParticipants.userId).as("nbParticipants"),
+      })
+      .from(hunts)
+      .where(eq(hunts.organizerId, organizerId))
+      .leftJoin(huntParticipants, eq(hunts.id, huntParticipants.huntId))
+      .groupBy(hunts.id);
+  
+    return result.map(({ hunt, nbParticipants }) => ({
+      ...hunt,
+      nbParticipants,
+    }));
   }
 
   static async create(huntData: HuntDto): Promise<Hunt> {

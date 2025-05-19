@@ -1,6 +1,6 @@
 // hunt-participant.model.ts
 import { z } from "zod";
-import type { HuntParticipant } from "../db/schemas/hunt_participants";
+import type { huntParticipants } from "../db/schemas/hunt_participants";
 
 export const huntParticipantSchema = z.object({
   huntId: z.string().uuid(),
@@ -13,7 +13,7 @@ export const huntParticipantSchema = z.object({
 export type HuntParticipantDto = z.infer<typeof huntParticipantSchema>;
 
 export class HuntParticipantModel {
-  static formatResponse(participant: HuntParticipant): HuntParticipant {
+  static formatResponse(participant: typeof huntParticipants): typeof huntParticipants {
     return participant;
   }
 

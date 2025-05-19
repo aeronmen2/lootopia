@@ -38,6 +38,28 @@ export class HuntController {
       return HuntController.handleError(c, error, "Failed to fetch hunt details")
     }
   }
+  
+  static async getHuntByOrganizer(c: Context) {
+    try {
+      const organizerId = c.req.param("organizerId")
+      const hunts = await HuntService.findByOrganizerId(organizerId)
+      
+      return c.json({ success: true, data: hunts })
+    } catch (error) {
+      return HuntController.handleError(c, error, "Failed to fetch hunts by organizer")
+    }
+  }
+
+  static async getHuntByParticipantId(c: Context) {
+    try {
+      const participantId = c.req.param("participantId")
+      const hunts = await HuntParticipantService.findByUserId(participantId)
+      
+      return c.json({ success: true, data: hunts })
+    } catch (error) {
+      return HuntController.handleError(c, error, "Failed to fetch hunts by participant")
+    }
+  }
 
   static async update(c: Context) {
     try {

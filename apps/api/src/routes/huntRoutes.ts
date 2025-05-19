@@ -14,6 +14,9 @@ huntRouter.post(
   HuntController.create,
 )
 
+huntRouter.get("/organizer/:organizerId", HuntController.getHuntByOrganizer)
+huntRouter.get("/participant/:participantId", HuntController.getHuntByParticipantId)
+
 huntRouter.get("/:id/participant", HuntController.getHuntParticipants)
 huntRouter.post("/:id/participant/:userId", HuntController.addUserToHunt)
 huntRouter.delete("/:id/participant/:userId", HuntController.removeUserFromHunt)
