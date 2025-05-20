@@ -2,6 +2,7 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/dashboard/__layout")({
+
   beforeLoad: async ({ context, location }) => {
     if (context.auth.loading) return
     if (!context.auth.isConnected) {

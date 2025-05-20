@@ -66,6 +66,13 @@ export function LoginForm() {
           position: 'top-right',
         });
         navigate({ to: "/dashboard" }) // Change route as needed
+
+      const result = await login({ email: form.email, password: form.password })
+      if (result?.status === "success") {
+        await refreshUser()
+        navigate({ to: "/dashboard" })
+      } else {
+        setErrors({ ...errors, general: "Login failed. Please try again." })
       }
     } catch (error: any) {
       setErrors({
@@ -79,6 +86,8 @@ export function LoginForm() {
         autoClose: 3000,
         position: 'top-right',
       });
+        general: error?.message || "Login failed. Please try again.",
+      })
     } finally {
       setIsLoading(false)
     }

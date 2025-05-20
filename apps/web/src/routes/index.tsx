@@ -14,9 +14,7 @@ export const Route = createFileRoute("/")({
 })
 
 function Index() {
-  return (
-    <div>
-      <LoginForm />
-    </div>
-  )
+
+  return <LoginForm />
+
 }
