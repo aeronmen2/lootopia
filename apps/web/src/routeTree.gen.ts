@@ -8,117 +8,187 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute } from '@tanstack/react-router'
 
 // Import Routes
 
-import { Route as rootRoute } from "./routes/__root"
-import { Route as SignupImport } from "./routes/signup"
-import { Route as LoginImport } from "./routes/login"
-import { Route as IndexImport } from "./routes/index"
-import { Route as DashboardIndexImport } from "./routes/dashboard/index"
-import { Route as VerifyEmailImport } from "./routes/verify.$email"
-import { Route as DashboardlayoutImport } from "./routes/dashboard/__layoutt"
+import { Route as rootRoute } from './routes/__root'
+import { Route as SignupImport } from './routes/signup'
+import { Route as LoginImport } from './routes/login'
+import { Route as IndexImport } from './routes/index'
+import { Route as UserIndexImport } from './routes/user/index'
+import { Route as MyHuntsIndexImport } from './routes/my-hunts/index'
+import { Route as JoinIndexImport } from './routes/join/index'
+import { Route as DashboardIndexImport } from './routes/dashboard/index'
+import { Route as CreateIndexImport } from './routes/create/index'
+import { Route as VerifyEmailImport } from './routes/verify.$email'
+import { Route as EditHuntIdImport } from './routes/edit/$huntId'
+import { Route as DashboardlayoutImport } from './routes/dashboard/__layout'
 
 // Create Virtual Routes
 
-const DashboardImport = createFileRoute("/dashboard")()
+const DashboardImport = createFileRoute('/dashboard')()
 
 // Create/Update Routes
 
 const DashboardRoute = DashboardImport.update({
-  id: "/dashboard",
-  path: "/dashboard",
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRoute,
 } as any)
 
 const SignupRoute = SignupImport.update({
-  id: "/signup",
-  path: "/signup",
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRoute,
 } as any)
 
 const LoginRoute = LoginImport.update({
-  id: "/login",
-  path: "/login",
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRoute,
 } as any)
 
 const IndexRoute = IndexImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UserIndexRoute = UserIndexImport.update({
+  id: '/user/',
+  path: '/user/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const MyHuntsIndexRoute = MyHuntsIndexImport.update({
+  id: '/my-hunts/',
+  path: '/my-hunts/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const JoinIndexRoute = JoinIndexImport.update({
+  id: '/join/',
+  path: '/join/',
   getParentRoute: () => rootRoute,
 } as any)
 
 const DashboardIndexRoute = DashboardIndexImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
 
+const CreateIndexRoute = CreateIndexImport.update({
+  id: '/create/',
+  path: '/create/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const VerifyEmailRoute = VerifyEmailImport.update({
-  id: "/verify/$email",
-  path: "/verify/$email",
+  id: '/verify/$email',
+  path: '/verify/$email',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const EditHuntIdRoute = EditHuntIdImport.update({
+  id: '/edit/$huntId',
+  path: '/edit/$huntId',
   getParentRoute: () => rootRoute,
 } as any)
 
 const DashboardlayoutRoute = DashboardlayoutImport.update({
-  id: "/__layout",
+  id: '/__layout',
   getParentRoute: () => DashboardRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/"
-      path: "/"
-      fullPath: "/"
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    "/login": {
-      id: "/login"
-      path: "/login"
-      fullPath: "/login"
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
-    "/signup": {
-      id: "/signup"
-      path: "/signup"
-      fullPath: "/signup"
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
       preLoaderRoute: typeof SignupImport
       parentRoute: typeof rootRoute
     }
-    "/dashboard": {
-      id: "/dashboard"
-      path: "/dashboard"
-      fullPath: "/dashboard"
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
     }
-    "/dashboard/__layout": {
-      id: "/dashboard/__layout"
-      path: "/dashboard"
-      fullPath: "/dashboard"
+    '/dashboard/__layout': {
+      id: '/dashboard/__layout'
+      path: '/dashboard'
+      fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardlayoutImport
       parentRoute: typeof DashboardRoute
     }
-    "/verify/$email": {
-      id: "/verify/$email"
-      path: "/verify/$email"
-      fullPath: "/verify/$email"
+    '/edit/$huntId': {
+      id: '/edit/$huntId'
+      path: '/edit/$huntId'
+      fullPath: '/edit/$huntId'
+      preLoaderRoute: typeof EditHuntIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/verify/$email': {
+      id: '/verify/$email'
+      path: '/verify/$email'
+      fullPath: '/verify/$email'
       preLoaderRoute: typeof VerifyEmailImport
       parentRoute: typeof rootRoute
     }
-    "/dashboard/": {
-      id: "/dashboard/"
-      path: "/"
-      fullPath: "/dashboard/"
+    '/create/': {
+      id: '/create/'
+      path: '/create'
+      fullPath: '/create'
+      preLoaderRoute: typeof CreateIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof DashboardImport
+    }
+    '/join/': {
+      id: '/join/'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof JoinIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/my-hunts/': {
+      id: '/my-hunts/'
+      path: '/my-hunts'
+      fullPath: '/my-hunts'
+      preLoaderRoute: typeof MyHuntsIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/user/': {
+      id: '/user/'
+      path: '/user'
+      fullPath: '/user'
+      preLoaderRoute: typeof UserIndexImport
+      parentRoute: typeof rootRoute
     }
   }
 }
@@ -140,53 +210,88 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 )
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute
-  "/login": typeof LoginRoute
-  "/signup": typeof SignupRoute
-  "/dashboard": typeof DashboardlayoutRoute
-  "/verify/$email": typeof VerifyEmailRoute
-  "/dashboard/": typeof DashboardIndexRoute
+  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/dashboard': typeof DashboardlayoutRoute
+  '/edit/$huntId': typeof EditHuntIdRoute
+  '/verify/$email': typeof VerifyEmailRoute
+  '/create': typeof CreateIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/join': typeof JoinIndexRoute
+  '/my-hunts': typeof MyHuntsIndexRoute
+  '/user': typeof UserIndexRoute
 }
 
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute
-  "/login": typeof LoginRoute
-  "/signup": typeof SignupRoute
-  "/dashboard": typeof DashboardIndexRoute
-  "/verify/$email": typeof VerifyEmailRoute
+  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/edit/$huntId': typeof EditHuntIdRoute
+  '/verify/$email': typeof VerifyEmailRoute
+  '/create': typeof CreateIndexRoute
+  '/join': typeof JoinIndexRoute
+  '/my-hunts': typeof MyHuntsIndexRoute
+  '/user': typeof UserIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  "/": typeof IndexRoute
-  "/login": typeof LoginRoute
-  "/signup": typeof SignupRoute
-  "/dashboard": typeof DashboardRouteWithChildren
-  "/dashboard/__layout": typeof DashboardlayoutRoute
-  "/verify/$email": typeof VerifyEmailRoute
-  "/dashboard/": typeof DashboardIndexRoute
+  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/dashboard/__layout': typeof DashboardlayoutRoute
+  '/edit/$huntId': typeof EditHuntIdRoute
+  '/verify/$email': typeof VerifyEmailRoute
+  '/create/': typeof CreateIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/join/': typeof JoinIndexRoute
+  '/my-hunts/': typeof MyHuntsIndexRoute
+  '/user/': typeof UserIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/login"
-    | "/signup"
-    | "/dashboard"
-    | "/verify/$email"
-    | "/dashboard/"
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/dashboard'
+    | '/edit/$huntId'
+    | '/verify/$email'
+    | '/create'
+    | '/dashboard/'
+    | '/join'
+    | '/my-hunts'
+    | '/user'
   fileRoutesByTo: FileRoutesByTo
-  to: "/" | "/login" | "/signup" | "/dashboard" | "/verify/$email"
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/dashboard'
+    | '/edit/$huntId'
+    | '/verify/$email'
+    | '/create'
+    | '/join'
+    | '/my-hunts'
+    | '/user'
   id:
-    | "__root__"
-    | "/"
-    | "/login"
-    | "/signup"
-    | "/dashboard"
-    | "/dashboard/__layout"
-    | "/verify/$email"
-    | "/dashboard/"
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/dashboard'
+    | '/dashboard/__layout'
+    | '/edit/$huntId'
+    | '/verify/$email'
+    | '/create/'
+    | '/dashboard/'
+    | '/join/'
+    | '/my-hunts/'
+    | '/user/'
   fileRoutesById: FileRoutesById
 }
 
@@ -195,7 +300,12 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  EditHuntIdRoute: typeof EditHuntIdRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  CreateIndexRoute: typeof CreateIndexRoute
+  JoinIndexRoute: typeof JoinIndexRoute
+  MyHuntsIndexRoute: typeof MyHuntsIndexRoute
+  UserIndexRoute: typeof UserIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -203,7 +313,12 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  EditHuntIdRoute: EditHuntIdRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  CreateIndexRoute: CreateIndexRoute,
+  JoinIndexRoute: JoinIndexRoute,
+  MyHuntsIndexRoute: MyHuntsIndexRoute,
+  UserIndexRoute: UserIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -220,7 +335,12 @@ export const routeTree = rootRoute
         "/login",
         "/signup",
         "/dashboard",
-        "/verify/$email"
+        "/edit/$huntId",
+        "/verify/$email",
+        "/create/",
+        "/join/",
+        "/my-hunts/",
+        "/user/"
       ]
     },
     "/": {
@@ -243,12 +363,27 @@ export const routeTree = rootRoute
       "filePath": "dashboard/__layout.tsx",
       "parent": "/dashboard"
     },
+    "/edit/$huntId": {
+      "filePath": "edit/$huntId.tsx"
+    },
     "/verify/$email": {
       "filePath": "verify.$email.tsx"
+    },
+    "/create/": {
+      "filePath": "create/index.tsx"
     },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx",
       "parent": "/dashboard"
+    },
+    "/join/": {
+      "filePath": "join/index.tsx"
+    },
+    "/my-hunts/": {
+      "filePath": "my-hunts/index.tsx"
+    },
+    "/user/": {
+      "filePath": "user/index.tsx"
     }
   }
 }
