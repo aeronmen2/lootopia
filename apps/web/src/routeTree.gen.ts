@@ -16,7 +16,6 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as SignupImport } from './routes/signup'
 import { Route as LoginImport } from './routes/login'
 import { Route as IndexImport } from './routes/index'
-import { Route as UserIndexImport } from './routes/user/index'
 import { Route as MyHuntsIndexImport } from './routes/my-hunts/index'
 import { Route as JoinIndexImport } from './routes/join/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
@@ -52,12 +51,6 @@ const LoginRoute = LoginImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const UserIndexRoute = UserIndexImport.update({
-  id: '/user/',
-  path: '/user/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -183,13 +176,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyHuntsIndexImport
       parentRoute: typeof rootRoute
     }
-    '/user/': {
-      id: '/user/'
-      path: '/user'
-      fullPath: '/user'
-      preLoaderRoute: typeof UserIndexImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -220,7 +206,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/join': typeof JoinIndexRoute
   '/my-hunts': typeof MyHuntsIndexRoute
-  '/user': typeof UserIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -233,7 +218,6 @@ export interface FileRoutesByTo {
   '/create': typeof CreateIndexRoute
   '/join': typeof JoinIndexRoute
   '/my-hunts': typeof MyHuntsIndexRoute
-  '/user': typeof UserIndexRoute
 }
 
 export interface FileRoutesById {
@@ -249,7 +233,6 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/join/': typeof JoinIndexRoute
   '/my-hunts/': typeof MyHuntsIndexRoute
-  '/user/': typeof UserIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -265,7 +248,6 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/join'
     | '/my-hunts'
-    | '/user'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -277,7 +259,6 @@ export interface FileRouteTypes {
     | '/create'
     | '/join'
     | '/my-hunts'
-    | '/user'
   id:
     | '__root__'
     | '/'
@@ -291,7 +272,6 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/join/'
     | '/my-hunts/'
-    | '/user/'
   fileRoutesById: FileRoutesById
 }
 
@@ -305,7 +285,6 @@ export interface RootRouteChildren {
   CreateIndexRoute: typeof CreateIndexRoute
   JoinIndexRoute: typeof JoinIndexRoute
   MyHuntsIndexRoute: typeof MyHuntsIndexRoute
-  UserIndexRoute: typeof UserIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -318,7 +297,6 @@ const rootRouteChildren: RootRouteChildren = {
   CreateIndexRoute: CreateIndexRoute,
   JoinIndexRoute: JoinIndexRoute,
   MyHuntsIndexRoute: MyHuntsIndexRoute,
-  UserIndexRoute: UserIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -339,8 +317,7 @@ export const routeTree = rootRoute
         "/verify/$email",
         "/create/",
         "/join/",
-        "/my-hunts/",
-        "/user/"
+        "/my-hunts/"
       ]
     },
     "/": {
@@ -381,9 +358,6 @@ export const routeTree = rootRoute
     },
     "/my-hunts/": {
       "filePath": "my-hunts/index.tsx"
-    },
-    "/user/": {
-      "filePath": "user/index.tsx"
     }
   }
 }

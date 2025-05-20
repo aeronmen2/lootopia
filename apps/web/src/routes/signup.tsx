@@ -7,7 +7,7 @@ export const Route = createFileRoute("/signup")({
       return
     }
     if (context.auth.isConnected) {
-      throw redirect({ to: "/dashboard/route-a" })
+      throw redirect({ to: "/dashboard" })
     }
   },
   component: RouteComponent,

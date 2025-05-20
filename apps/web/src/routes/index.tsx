@@ -7,14 +7,16 @@ export const Route = createFileRoute("/")({
       return
     }
     if (context.auth.isConnected) {
-      throw redirect({ to: "/dashboard/route-b" })
+      throw redirect({ to: "/dashboard" })
     }
   },
   component: Index,
 })
 
 function Index() {
-
-  return <LoginForm />
-
+  return (
+    <div>
+      <LoginForm />
+    </div>
+  )
 }

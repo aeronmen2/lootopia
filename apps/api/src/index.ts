@@ -14,7 +14,7 @@ app.use(
   "*",
   cors({
     origin: "http://localhost:5173",
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization", "x-csrf-token"],
     exposeHeaders: ["Content-Length", "X-Request-Id"],
     maxAge: 600,
@@ -22,7 +22,15 @@ app.use(
   }),
 )
 
-app.use(csrf({ origin: "http://localhost:5173" }))
+app.use("*", async (c, next) => {
+  // Skip CSRF for API routes
+  if (c.req.path.startsWith("/api")) {
+    return next()
+  }
+
+  // Otherwise apply CSRF
+  return csrf({ origin: "http://localhost:5173" })(c, next)
+})
 
 app.get("/", (c) => {
   return c.json({ message: "👋 Hello, world!" })
