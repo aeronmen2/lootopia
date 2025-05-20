@@ -1,14 +1,9 @@
 import { api } from "./client"
+import { User } from "@/lib/types"
 
 export interface LoginCredentials {
   email: string
   password: string
-}
-
-export interface User {
-  id: string
-  name: string
-  email: string
 }
 
 export interface AuthResponse {
@@ -40,6 +35,13 @@ export const authApi = {
         email: email.toLowerCase(),
         password,
       }),
+    })
+  },
+
+  update: async (id: string, data: Partial<User>): Promise<User> => {
+    return api(`/api/users/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
     })
   },
 

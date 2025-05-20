@@ -41,7 +41,7 @@ export class AuthService {
       .insert(users)
       .values({
         name,
-        lasname: "",
+        lastname: "",
         username: name.toLowerCase().replace(/\s+/g, ""),
         email,
         passwordHash,
@@ -303,7 +303,7 @@ export class AuthService {
     return {
       id: user.id,
       name: user.name,
-      lasname: user.lasname,
+      lastname: user.lastname,
       username: user.username,
       email: user.email,
       emailVerified: user.emailVerified,
@@ -313,6 +313,7 @@ export class AuthService {
       city: user.city,
       address: user.address,
       photoUrl: user.photoUrl,
+      website: user.website,
       bio: user.bio,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
