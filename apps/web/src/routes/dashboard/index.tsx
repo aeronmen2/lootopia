@@ -31,6 +31,14 @@ function DashboardHome() {
           <p>Email: {user.email}</p>
           <button
             onClick={() => {
+              router.navigate({ to: "/user" })
+            }}
+            className="px-4 py-2 mt-4 text-white rounded bg-blue-500 hover:bg-blue-700"
+          >
+            Update
+          </button>
+          <button
+            onClick={() => {
               logout()
               router.navigate({ to: "/" })
             }}
