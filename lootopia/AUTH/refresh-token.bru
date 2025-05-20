@@ -1,0 +1,17 @@
+meta {
+  name: REFRESH TOKEN
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{API_AUTH_URL}}/refresh-token
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "bbb291638f8798a2bf0245fdfe90ee44b1a9edd8f78ffbb9b47dd5d635401d8f"
+  }
+}

@@ -1,0 +1,18 @@
+meta {
+  name: LOGIN
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{API_AUTH_URL}}/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "alexisduchemann@icloud.com",
+    "password": "SecurePass123"
+  }
+}

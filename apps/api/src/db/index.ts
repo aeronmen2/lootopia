@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/node-postgres"
 import { Pool } from "pg"
 import config from "../config/config"
-import * as postSchema from "./schemas/postSchema"
-import * as userSchema from "./schemas/userSchema"
+import * as schema from "./schemas"
+import * as relations from "./relations"
 
 const pool = new Pool({
   connectionString: config.databaseUrl,
@@ -10,12 +10,9 @@ const pool = new Pool({
 
 export const db = drizzle(pool, {
   schema: {
-    ...userSchema,
-    ...postSchema,
+    ...schema,
+    ...relations,
   },
 })
 
-export const schemas = {
-  users: userSchema,
-  posts: postSchema,
-}
+export { schema, relations }

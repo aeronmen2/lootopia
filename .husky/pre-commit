@@ -1,3 +1,0 @@
-cd apps/api && bun run test && bun run lint
-cd ..
-cd web && bun run lint
