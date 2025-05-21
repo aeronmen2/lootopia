@@ -51,6 +51,12 @@ export const authApi = {
     })
   },
 
+  delete: async (id: string): Promise<{ status: string; message: string }> => {
+    return api(`/api/users/${id}`, {
+      method: "DELETE",
+    })
+  },
+
   getCurrentUser: async (): Promise<{
     status: string
     data: { user: User }
