@@ -54,6 +54,7 @@ export class HuntParticipantService {
       .from(hunts)
       .innerJoin(huntParticipants, eq(hunts.id, huntParticipants.huntId))
       .where(inArray(hunts.id, huntIds))
+      .orderBy(hunts.startDate)
       .groupBy(hunts.id);
   
     return result.map(({ hunt, nbParticipants }) => ({

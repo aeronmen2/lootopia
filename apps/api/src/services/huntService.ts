@@ -49,6 +49,7 @@ export class HuntService {
       .from(hunts)
       .where(eq(hunts.organizerId, organizerId))
       .leftJoin(huntParticipants, eq(hunts.id, huntParticipants.huntId))
+      .orderBy(hunts.startDate)
       .groupBy(hunts.id);
   
     return result.map(({ hunt, nbParticipants }) => ({
