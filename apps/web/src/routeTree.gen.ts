@@ -8,13 +8,12 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SignupImport } from './routes/signup'
 import { Route as LoginImport } from './routes/login'
+import { Route as DashboardImport } from './routes/dashboard'
 import { Route as IndexImport } from './routes/index'
 import { Route as UserIndexImport } from './routes/user/index'
 import { Route as MyHuntsIndexImport } from './routes/my-hunts/index'
@@ -23,19 +22,14 @@ import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as CreateIndexImport } from './routes/create/index'
 import { Route as VerifyEmailImport } from './routes/verify.$email'
 import { Route as EditHuntIdImport } from './routes/edit/$huntId'
-import { Route as DashboardlayoutImport } from './routes/dashboard/__layout'
-
-// Create Virtual Routes
-
-const DashboardImport = createFileRoute('/dashboard')()
+import { Route as DashboardTransactionsImport } from './routes/dashboard/transactions'
+import { Route as DashboardRouteBImport } from './routes/dashboard/route-b'
+import { Route as DashboardRouteAImport } from './routes/dashboard/route-a'
+import { Route as DashboardBuyCurrencyImport } from './routes/dashboard/buy-currency'
+import { Route as DashboardPaymentSuccessImport } from './routes/dashboard/payment/success'
+import { Route as DashboardPaymentCancelImport } from './routes/dashboard/payment/cancel'
 
 // Create/Update Routes
-
-const DashboardRoute = DashboardImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const SignupRoute = SignupImport.update({
   id: '/signup',
@@ -46,6 +40,12 @@ const SignupRoute = SignupImport.update({
 const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardRoute = DashboardImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -97,8 +97,39 @@ const EditHuntIdRoute = EditHuntIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const DashboardlayoutRoute = DashboardlayoutImport.update({
-  id: '/__layout',
+const DashboardTransactionsRoute = DashboardTransactionsImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardRouteBRoute = DashboardRouteBImport.update({
+  id: '/route-b',
+  path: '/route-b',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardRouteARoute = DashboardRouteAImport.update({
+  id: '/route-a',
+  path: '/route-a',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardBuyCurrencyRoute = DashboardBuyCurrencyImport.update({
+  id: '/buy-currency',
+  path: '/buy-currency',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardPaymentSuccessRoute = DashboardPaymentSuccessImport.update({
+  id: '/payment/success',
+  path: '/payment/success',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardPaymentCancelRoute = DashboardPaymentCancelImport.update({
+  id: '/payment/cancel',
+  path: '/payment/cancel',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -111,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
     }
     '/login': {
@@ -127,19 +165,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupImport
       parentRoute: typeof rootRoute
     }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardImport
-      parentRoute: typeof rootRoute
+    '/dashboard/buy-currency': {
+      id: '/dashboard/buy-currency'
+      path: '/buy-currency'
+      fullPath: '/dashboard/buy-currency'
+      preLoaderRoute: typeof DashboardBuyCurrencyImport
+      parentRoute: typeof DashboardImport
     }
-    '/dashboard/__layout': {
-      id: '/dashboard/__layout'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardlayoutImport
-      parentRoute: typeof DashboardRoute
+    '/dashboard/route-a': {
+      id: '/dashboard/route-a'
+      path: '/route-a'
+      fullPath: '/dashboard/route-a'
+      preLoaderRoute: typeof DashboardRouteAImport
+      parentRoute: typeof DashboardImport
+    }
+    '/dashboard/route-b': {
+      id: '/dashboard/route-b'
+      path: '/route-b'
+      fullPath: '/dashboard/route-b'
+      preLoaderRoute: typeof DashboardRouteBImport
+      parentRoute: typeof DashboardImport
+    }
+    '/dashboard/transactions': {
+      id: '/dashboard/transactions'
+      path: '/transactions'
+      fullPath: '/dashboard/transactions'
+      preLoaderRoute: typeof DashboardTransactionsImport
+      parentRoute: typeof DashboardImport
     }
     '/edit/$huntId': {
       id: '/edit/$huntId'
@@ -190,19 +242,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserIndexImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/payment/cancel': {
+      id: '/dashboard/payment/cancel'
+      path: '/payment/cancel'
+      fullPath: '/dashboard/payment/cancel'
+      preLoaderRoute: typeof DashboardPaymentCancelImport
+      parentRoute: typeof DashboardImport
+    }
+    '/dashboard/payment/success': {
+      id: '/dashboard/payment/success'
+      path: '/payment/success'
+      fullPath: '/dashboard/payment/success'
+      preLoaderRoute: typeof DashboardPaymentSuccessImport
+      parentRoute: typeof DashboardImport
+    }
   }
 }
 
 // Create and export the route tree
 
 interface DashboardRouteChildren {
-  DashboardlayoutRoute: typeof DashboardlayoutRoute
+  DashboardBuyCurrencyRoute: typeof DashboardBuyCurrencyRoute
+  DashboardRouteARoute: typeof DashboardRouteARoute
+  DashboardRouteBRoute: typeof DashboardRouteBRoute
+  DashboardTransactionsRoute: typeof DashboardTransactionsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardPaymentCancelRoute: typeof DashboardPaymentCancelRoute
+  DashboardPaymentSuccessRoute: typeof DashboardPaymentSuccessRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardlayoutRoute: DashboardlayoutRoute,
+  DashboardBuyCurrencyRoute: DashboardBuyCurrencyRoute,
+  DashboardRouteARoute: DashboardRouteARoute,
+  DashboardRouteBRoute: DashboardRouteBRoute,
+  DashboardTransactionsRoute: DashboardTransactionsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardPaymentCancelRoute: DashboardPaymentCancelRoute,
+  DashboardPaymentSuccessRoute: DashboardPaymentSuccessRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
@@ -211,9 +287,13 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/dashboard': typeof DashboardlayoutRoute
+  '/dashboard/buy-currency': typeof DashboardBuyCurrencyRoute
+  '/dashboard/route-a': typeof DashboardRouteARoute
+  '/dashboard/route-b': typeof DashboardRouteBRoute
+  '/dashboard/transactions': typeof DashboardTransactionsRoute
   '/edit/$huntId': typeof EditHuntIdRoute
   '/verify/$email': typeof VerifyEmailRoute
   '/create': typeof CreateIndexRoute
@@ -221,28 +301,39 @@ export interface FileRoutesByFullPath {
   '/join': typeof JoinIndexRoute
   '/my-hunts': typeof MyHuntsIndexRoute
   '/user': typeof UserIndexRoute
+  '/dashboard/payment/cancel': typeof DashboardPaymentCancelRoute
+  '/dashboard/payment/success': typeof DashboardPaymentSuccessRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/buy-currency': typeof DashboardBuyCurrencyRoute
+  '/dashboard/route-a': typeof DashboardRouteARoute
+  '/dashboard/route-b': typeof DashboardRouteBRoute
+  '/dashboard/transactions': typeof DashboardTransactionsRoute
   '/edit/$huntId': typeof EditHuntIdRoute
   '/verify/$email': typeof VerifyEmailRoute
   '/create': typeof CreateIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/join': typeof JoinIndexRoute
   '/my-hunts': typeof MyHuntsIndexRoute
   '/user': typeof UserIndexRoute
+  '/dashboard/payment/cancel': typeof DashboardPaymentCancelRoute
+  '/dashboard/payment/success': typeof DashboardPaymentSuccessRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/dashboard': typeof DashboardRouteWithChildren
-  '/dashboard/__layout': typeof DashboardlayoutRoute
+  '/dashboard/buy-currency': typeof DashboardBuyCurrencyRoute
+  '/dashboard/route-a': typeof DashboardRouteARoute
+  '/dashboard/route-b': typeof DashboardRouteBRoute
+  '/dashboard/transactions': typeof DashboardTransactionsRoute
   '/edit/$huntId': typeof EditHuntIdRoute
   '/verify/$email': typeof VerifyEmailRoute
   '/create/': typeof CreateIndexRoute
@@ -250,15 +341,21 @@ export interface FileRoutesById {
   '/join/': typeof JoinIndexRoute
   '/my-hunts/': typeof MyHuntsIndexRoute
   '/user/': typeof UserIndexRoute
+  '/dashboard/payment/cancel': typeof DashboardPaymentCancelRoute
+  '/dashboard/payment/success': typeof DashboardPaymentSuccessRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard'
     | '/login'
     | '/signup'
-    | '/dashboard'
+    | '/dashboard/buy-currency'
+    | '/dashboard/route-a'
+    | '/dashboard/route-b'
+    | '/dashboard/transactions'
     | '/edit/$huntId'
     | '/verify/$email'
     | '/create'
@@ -266,25 +363,36 @@ export interface FileRouteTypes {
     | '/join'
     | '/my-hunts'
     | '/user'
+    | '/dashboard/payment/cancel'
+    | '/dashboard/payment/success'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/signup'
-    | '/dashboard'
+    | '/dashboard/buy-currency'
+    | '/dashboard/route-a'
+    | '/dashboard/route-b'
+    | '/dashboard/transactions'
     | '/edit/$huntId'
     | '/verify/$email'
     | '/create'
+    | '/dashboard'
     | '/join'
     | '/my-hunts'
     | '/user'
+    | '/dashboard/payment/cancel'
+    | '/dashboard/payment/success'
   id:
     | '__root__'
     | '/'
+    | '/dashboard'
     | '/login'
     | '/signup'
-    | '/dashboard'
-    | '/dashboard/__layout'
+    | '/dashboard/buy-currency'
+    | '/dashboard/route-a'
+    | '/dashboard/route-b'
+    | '/dashboard/transactions'
     | '/edit/$huntId'
     | '/verify/$email'
     | '/create/'
@@ -292,14 +400,16 @@ export interface FileRouteTypes {
     | '/join/'
     | '/my-hunts/'
     | '/user/'
+    | '/dashboard/payment/cancel'
+    | '/dashboard/payment/success'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
-  DashboardRoute: typeof DashboardRouteWithChildren
   EditHuntIdRoute: typeof EditHuntIdRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   CreateIndexRoute: typeof CreateIndexRoute
@@ -310,9 +420,9 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
-  DashboardRoute: DashboardRouteWithChildren,
   EditHuntIdRoute: EditHuntIdRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   CreateIndexRoute: CreateIndexRoute,
@@ -332,9 +442,9 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/dashboard",
         "/login",
         "/signup",
-        "/dashboard",
         "/edit/$huntId",
         "/verify/$email",
         "/create/",
@@ -346,21 +456,38 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.tsx"
     },
+    "/dashboard": {
+      "filePath": "dashboard.tsx",
+      "children": [
+        "/dashboard/buy-currency",
+        "/dashboard/route-a",
+        "/dashboard/route-b",
+        "/dashboard/transactions",
+        "/dashboard/",
+        "/dashboard/payment/cancel",
+        "/dashboard/payment/success"
+      ]
+    },
     "/login": {
       "filePath": "login.tsx"
     },
     "/signup": {
       "filePath": "signup.tsx"
     },
-    "/dashboard": {
-      "filePath": "dashboard",
-      "children": [
-        "/dashboard/__layout",
-        "/dashboard/"
-      ]
+    "/dashboard/buy-currency": {
+      "filePath": "dashboard/buy-currency.tsx",
+      "parent": "/dashboard"
     },
-    "/dashboard/__layout": {
-      "filePath": "dashboard/__layout.tsx",
+    "/dashboard/route-a": {
+      "filePath": "dashboard/route-a.tsx",
+      "parent": "/dashboard"
+    },
+    "/dashboard/route-b": {
+      "filePath": "dashboard/route-b.tsx",
+      "parent": "/dashboard"
+    },
+    "/dashboard/transactions": {
+      "filePath": "dashboard/transactions.tsx",
       "parent": "/dashboard"
     },
     "/edit/$huntId": {
@@ -384,6 +511,14 @@ export const routeTree = rootRoute
     },
     "/user/": {
       "filePath": "user/index.tsx"
+    },
+    "/dashboard/payment/cancel": {
+      "filePath": "dashboard/payment/cancel.tsx",
+      "parent": "/dashboard"
+    },
+    "/dashboard/payment/success": {
+      "filePath": "dashboard/payment/success.tsx",
+      "parent": "/dashboard"
     }
   }
 }

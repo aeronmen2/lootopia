@@ -15,6 +15,7 @@
   "dependencies": {
     "@hono/eslint-config": "^1.1.1",
     "@hono/zod-validator": "^0.4.3",
+    "@stripe/stripe-js": "^7.3.0",
     "@types/nodemailer": "^6.4.17",
     "@vitest/eslint-plugin": "^1.1.39",
     "bcrypt": "^5.1.1",
@@ -26,7 +27,8 @@
     "pg": "^8.14.1",
     "postgres": "^3.4.5",
     "react-toastify": "^11.0.5",
-    "resend": "^4.2.0"
+    "resend": "^4.2.0",
+    "stripe": "^18.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",
