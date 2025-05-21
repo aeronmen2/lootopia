@@ -1,87 +1,68 @@
-import { useCurrentUser } from "@/hooks/query/useAuthQueries"
-import { useAuth } from "@/hooks/useAuth"
-import { createFileRoute, useRouter, Link } from "@tanstack/react-router"
-import { Card, CardContent } from "@/components/ui/card"
-import { Compass, Users, User } from "lucide-react"
+import { createFileRoute, Link } from "@tanstack/react-router"
+import { useBalance } from "@/hooks/query/useBalanceQuery"
 
-// dashboard/index.tsx
 export const Route = createFileRoute("/dashboard/")({
-  loader: async ({ context }) => {
-    // loader logic here
-    return { isAuthenticated: context.auth.isConnected }
-  },
-  component: DashboardHome,
+  component: DashboardIndexComponent,
 })
 
-function DashboardHome() {
-  const { logout } = useAuth()
-  const { data: user, isLoading } = useCurrentUser()
-  const { isAuthenticated } = Route.useLoaderData()
-  const router = useRouter()
-
-  if (!isAuthenticated) return null
-  if (isLoading) return <div>Loading...</div>
+function DashboardIndexComponent() {
+  const { data: userBalance } = useBalance()
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      {user && (
-        <div>
-          <p>Welcome, {user.name}!</p>
-          <p>Email: {user.email}</p>
-          <button
-            onClick={() => {
-              router.navigate({ to: "/user" })
-            }}
-            className="px-4 py-2 mt-4 text-white rounded bg-blue-500 hover:bg-blue-700"
-          >
-            Update
-          </button>
-          <button
-            onClick={() => {
-              logout()
-              router.navigate({ to: "/" })
-            }}
-            className="px-4 py-2 mt-4 text-white bg-red-600 rounded hover:bg-red-700"
-          >
-            Logout
-          </button>
-        </div>
-      )}
-      <main className="container mx-auto py-10 px-4">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold text-center mb-8">Chasse au Trésor Virtuelle</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Tableau de bord</h1>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            <Link to="/create" className="block">
-              <Card className="h-full transition-all hover:shadow-lg">
-                <CardContent className="flex flex-col items-center justify-center p-6 h-full">
-                  <Compass className="h-16 w-16 mb-4 text-emerald-600" />
-                  <h2 className="text-2xl font-semibold text-center">Créer une chasse</h2>
-                </CardContent>
-              </Card>
-            </Link>
-
-            <Link to="/join" className="block">
-              <Card className="h-full transition-all hover:shadow-lg">
-                <CardContent className="flex flex-col items-center justify-center p-6 h-full">
-                  <Users className="h-16 w-16 mb-4 text-blue-600" />
-                  <h2 className="text-2xl font-semibold text-center">Rejoindre une chasse</h2>
-                </CardContent>
-              </Card>
-            </Link>
-
-            <Link to="/my-hunts" className="block">
-              <Card className="h-full transition-all hover:shadow-lg">
-                <CardContent className="flex flex-col items-center justify-center p-6 h-full">
-                  <User className="h-16 w-16 mb-4 text-purple-600" />
-                  <h2 className="text-2xl font-semibold text-center">Voir mes chasses</h2>
-                </CardContent>
-              </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h2 className="text-lg font-semibold mb-4">Votre solde</h2>
+          <div className="flex items-center space-x-2 mb-4">
+            <span className="text-3xl font-bold">{userBalance || 0}</span>
+            <svg
+              className="h-6 w-6 text-yellow-500"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+            </svg>
+          </div>
+          <div className="flex space-x-2">
+            <Link
+              to="/dashboard/buy-currency"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium"
+            >
+              Acheter des couronnes
             </Link>
           </div>
         </div>
-      </main>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h2 className="text-lg font-semibold mb-4">Marché</h2>
+          <p className="text-muted-foreground mb-4">
+            Découvrez notre sélection d'objets exclusifs et d'avantages
+            disponibles dans la boutique.
+          </p>
+          <Link
+            to="/dashboard/marketplace"
+            className="inline-flex items-center text-primary hover:text-primary/90 font-medium"
+          >
+            Voir la boutique →
+          </Link>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h2 className="text-lg font-semibold mb-4">Chasses au trésor</h2>
+          <p className="text-muted-foreground mb-4">
+            Participez à des chasses au trésor passionnantes ou créez les
+            vôtres.
+          </p>
+          <Link
+            to="/create"
+            className="inline-flex items-center text-primary hover:text-primary/90 font-medium"
+          >
+            Créer une chasse →
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

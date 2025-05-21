@@ -1,22 +1,14 @@
-import { createFileRoute, redirect } from "@tanstack/react-router"
-import { LoginForm } from "@/components/auth/LoginForm"
+import Hero from "@/components/hero/hero-section"
+import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/")({
-  beforeLoad: async ({ context }) => {
-    if (context.auth.loading) {
-      return
-    }
-    if (context.auth.isConnected) {
-      throw redirect({ to: "/dashboard" })
-    }
-  },
-  component: Index,
+  component: Home,
 })
 
-function Index() {
+function Home() {
   return (
-    <div>
-      <LoginForm />
+    <div className="p-2">
+      <Hero />
     </div>
   )
 }

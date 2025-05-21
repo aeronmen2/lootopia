@@ -10,6 +10,13 @@ export default {
   jwtSecret: process.env.JWT_SECRET || "your-jwt-secret",
   cookieSecret: process.env.COOKIE_SECRET || "your-cookie-secret",
   clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
+  stripe: {
+    secretKey:
+      process.env.STRIPE_SECRET_KEY || "sk_test_4eC39HqLyjWDarjtT1zdp7dc",
+    webhookSecret:
+      process.env.STRIPE_WEBHOOK_SECRET ||
+      "whsec_1234567890abcdef1234567890abcdef",
+  },
   cookieSettings: {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

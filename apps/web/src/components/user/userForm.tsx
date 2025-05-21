@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "@tanstack/react-router"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
 import { Button } from "@/components/ui/button"
@@ -15,16 +16,32 @@ import { Loader2, CheckCircle } from "lucide-react"
 import { useCurrentUser } from "@/hooks/query/useAuthQueries"
 import useToast from "@/hooks/useToast"
 import { authApi } from "@/api/auth"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 type ProfileFormProps = {
   section: "general" | "contact" | "security"
 }
 
 export function UserForm({ section }: ProfileFormProps) {
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const { data: user } = useCurrentUser()
   const { toast } = useToast()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  async function handleDeleteAccount() {
+    if (!user || !("id" in user)) return
+    try {
+      await authApi.logout()
+      await authApi.delete(user.id)
+      setIsModalOpen(false)
+      toast.success({ title: "Succès", message: "Compte supprimé avec succès !" })
+      router.navigate({ to: "/login" })
+    } catch {
+      toast.error({ title: "Erreur", message: "Impossible de supprimer le compte." })
+    }
+  }
 
   // Create a form schema based on the section
   const getFormSchema = () => {
@@ -345,6 +362,9 @@ export function UserForm({ section }: ProfileFormProps) {
                 <Button variant="outline" type="button" className="w-full justify-start">
                   Activer l'authentification à deux facteurs
                 </Button>
+                <Button variant="destructive" type="button" className="w-full justify-start" onClick={() => setIsModalOpen(true)}>
+                  Supprimer le compte
+                </Button>
               </div>
             </div>
           </div>
@@ -362,6 +382,25 @@ export function UserForm({ section }: ProfileFormProps) {
             Enregistrer
           </Button>
         </div>
+
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirmer la suppression</DialogTitle>
+              <DialogDescription>
+                Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                Annuler
+              </Button>
+              <Button variant="destructive" onClick={handleDeleteAccount}>
+                Supprimer
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </form>
     </Form>
   )
