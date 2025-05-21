@@ -3,13 +3,13 @@ import Stripe from "stripe"
 import { db } from "../db"
 import { transactions } from "../db/schemas/transactions"
 import { userCurrency } from "../db/schemas/userCurrency"
+import { users } from "../db/schemas/userSchema"
 import config from "../config/config"
 
 const stripe = new Stripe(config.stripe.secretKey, {
   apiVersion: "2025-04-30.basil",
 })
 
-// Currency package definitions
 const CURRENCY_PACKAGES = {
   micro: { amount: 10, price: 99 }, // 0.99€
   small: { amount: 25, price: 249 }, // 2.49€
@@ -27,7 +27,6 @@ export class PaymentService {
       throw new Error("Invalid package")
     }
 
-    // Create a transaction record first
     const [transaction] = await db
       .insert(transactions)
       .values({
@@ -41,10 +40,18 @@ export class PaymentService {
       })
       .returning()
 
-    // Create Stripe checkout session
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+    })
+
+    if (!user) {
+      throw new Error("User not found")
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card"],
+      payment_method_types: ["card", "revolut_pay"],
+      customer_email: user.email,
       line_items: [
         {
           price_data: {
@@ -57,8 +64,8 @@ export class PaymentService {
           quantity: 1,
         },
       ],
-      success_url: `${config.appUrl}/dashboard/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${config.appUrl}/dashboard/payment/cancel`,
+      success_url: `${config.clientUrl}/dashboard/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${config.clientUrl}/dashboard/payment/cancel`,
       metadata: {
         userId,
         transactionId: transaction.id,
@@ -66,7 +73,6 @@ export class PaymentService {
       },
     })
 
-    // Update transaction with session ID
     await db
       .update(transactions)
       .set({
@@ -87,7 +93,6 @@ export class PaymentService {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session
 
-        // Find the transaction
         const [transaction] = await db
           .select()
           .from(transactions)
@@ -101,15 +106,12 @@ export class PaymentService {
           return { success: true, alreadyProcessed: true }
         }
 
-        // Update user's balance
         await db.transaction(async (tx) => {
-          // Update transaction status
           await tx
             .update(transactions)
             .set({ status: "COMPLETED" })
             .where(eq(transactions.id, transaction.id))
 
-          // Update or create user currency balance
           const [existing] = await tx
             .select()
             .from(userCurrency)
@@ -134,7 +136,6 @@ export class PaymentService {
       case "checkout.session.expired": {
         const session = event.data.object as Stripe.Checkout.Session
 
-        // Update transaction status to failed
         await db
           .update(transactions)
           .set({ status: "FAILED" })
@@ -160,21 +161,40 @@ export class PaymentService {
       throw new Error("Transaction not found")
     }
 
-    if (transaction.status !== "COMPLETED") {
-      // Check status with Stripe
-      const session = await stripe.checkout.sessions.retrieve(sessionId)
-
-      if (session.payment_status === "paid") {
-        await this.handleWebhook({
-          type: "checkout.session.completed",
-          data: { object: session },
-        } as unknown as Stripe.Event)
+    // If transaction is already completed, return it
+    if (transaction.status === "COMPLETED") {
+      return {
+        success: true,
+        transaction,
       }
     }
 
+    // Otherwise check with Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId)
+
+    if (session.payment_status === "paid") {
+      // Process the webhook event manually if needed
+      await this.handleWebhook({
+        type: "checkout.session.completed",
+        data: { object: session },
+      } as unknown as Stripe.Event)
+
+      // Fetch the updated transaction
+      const [updatedTransaction] = await db
+        .select()
+        .from(transactions)
+        .where(eq(transactions.stripeSessionId, sessionId))
+
+      return {
+        success: true,
+        transaction: updatedTransaction,
+      }
+    }
+
+    // Payment not completed yet
     return {
-      success: transaction.status === "COMPLETED",
-      transaction: transaction.status === "COMPLETED" ? transaction : undefined,
+      success: false,
+      paymentStatus: session.payment_status,
     }
   }
 

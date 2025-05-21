@@ -30,6 +30,7 @@ export interface VerifyPaymentResponse {
   success: boolean
   alreadyProcessed?: boolean
   transaction?: Transaction
+  paymentStatus?: string
 }
 
 export interface BalanceResponse {

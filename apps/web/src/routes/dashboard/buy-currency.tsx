@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import {
   Card,
   CardHeader,
@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import useToast from "@/hooks/useToast"
-import { paymentApi } from "@/api/paymentApi"
-import { useAuth } from "@/hooks/useAuth"
+import { useBalance } from "@/hooks/query/useBalanceQuery"
+import { useCreateCheckout } from "@/hooks/query/usePaymentMutation"
 
 export const Route = createFileRoute("/dashboard/buy-currency")({
   component: BuyCurrencyPage,
@@ -58,53 +58,19 @@ const CURRENCY_PACKAGES = [
 
 function BuyCurrencyPage() {
   const [selectedPackage, setSelectedPackage] = useState(CURRENCY_PACKAGES[2])
-  const [isLoading, setIsLoading] = useState(false)
-  const [userBalance, setUserBalance] = useState<number | null>(null)
   const { toast } = useToast()
-  const { user } = useAuth()
+  const { data: userBalance } = useBalance()
+  const checkout = useCreateCheckout()
 
-  useEffect(() => {
-    const fetchBalance = async () => {
-      try {
-        const response = await paymentApi.getBalance()
-        if (response.success) {
-          setUserBalance(response.balance)
-        }
-      } catch (err) {
-        console.error("Failed to fetch balance:", err)
-      }
-    }
-
-    if (user) {
-      fetchBalance()
-    }
-  }, [user])
-
-  const handlePurchase = async () => {
-    setIsLoading(true)
-
-    try {
-      const checkoutResponse = await paymentApi.createCheckout(
-        selectedPackage.id,
-      )
-
-      if (checkoutResponse.success && checkoutResponse.sessionUrl) {
-        console.log("Session URL:", checkoutResponse.sessionUrl)
-        window.location.href = checkoutResponse.sessionUrl
-      } else {
+  const handlePurchase = () => {
+    checkout.mutate(selectedPackage.id, {
+      onError: () => {
         toast.error({
           title: "Erreur",
-          message: "Impossible de créer la session de paiement.",
+          message: "Une erreur est survenue lors du traitement du paiement.",
         })
-      }
-    } catch (err) {
-      toast.error({
-        title: "Erreur",
-        message: "Une erreur est survenue lors du traitement du paiement.",
-      })
-    } finally {
-      setIsLoading(false)
-    }
+      },
+    })
   }
 
   return (
@@ -234,9 +200,9 @@ function BuyCurrencyPage() {
                 className="w-full"
                 size="lg"
                 onClick={handlePurchase}
-                disabled={isLoading}
+                disabled={checkout.isPending}
               >
-                {isLoading
+                {checkout.isPending
                   ? "Traitement en cours..."
                   : `Payer ${selectedPackage.price} €`}
               </Button>

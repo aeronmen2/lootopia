@@ -16,8 +16,6 @@ export const createCheckout = async (c: Context) => {
 
     const result = await paymentService.createCheckoutSession(userId, packageId)
 
-    console.log("Checkout session created:", result)
-
     return c.json({
       success: true,
       sessionId: result.sessionId,

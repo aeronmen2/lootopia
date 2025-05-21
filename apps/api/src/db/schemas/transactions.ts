@@ -7,7 +7,6 @@ import {
   jsonb,
 } from "drizzle-orm/pg-core"
 import { users } from "./userSchema"
-import { sql } from "drizzle-orm"
 
 export const transactions = pgTable("transactions", {
   id: uuid("id").primaryKey().defaultRandom(),

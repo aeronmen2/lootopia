@@ -122,6 +122,31 @@ function DashboardLayoutComponent() {
             </SidebarMenuItem>
 
             <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                className="bg-yellow-100 hover:bg-yellowa-200 text-yellow-800 font-medium px-3 py-2.5 transition-colors"
+              >
+                <Link to="/dashboard/buy-currency">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-5 w-5 mr-3 text-yellow-600"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 16V8M16 12H8M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <span>Marketplace</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
               <SidebarMenuButton asChild className="px-3 py-2.5 font-medium">
                 <Link to="/dashboard/transactions">
                   <svg

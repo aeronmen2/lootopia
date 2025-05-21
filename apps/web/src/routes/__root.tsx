@@ -128,7 +128,7 @@ function RootComponent() {
         </nav>
       )}
       <Outlet />
-      <TanStackRouterDevtools position="bottom-left" initialIsOpen={false} />
+      <TanStackRouterDevtools position="top-right" initialIsOpen={false} />
       <ReactQueryDevtools initialIsOpen={false} />
     </>
   )
