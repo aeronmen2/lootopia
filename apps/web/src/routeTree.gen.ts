@@ -21,6 +21,7 @@ import { Route as JoinIndexImport } from './routes/join/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as CreateIndexImport } from './routes/create/index'
 import { Route as VerifyEmailImport } from './routes/verify.$email'
+import { Route as HuntHuntIdImport } from './routes/hunt/$huntId'
 import { Route as EditHuntIdImport } from './routes/edit/$huntId'
 import { Route as DashboardTransactionsImport } from './routes/dashboard/transactions'
 import { Route as DashboardRouteBImport } from './routes/dashboard/route-b'
@@ -90,6 +91,12 @@ const CreateIndexRoute = CreateIndexImport.update({
 const VerifyEmailRoute = VerifyEmailImport.update({
   id: '/verify/$email',
   path: '/verify/$email',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const HuntHuntIdRoute = HuntHuntIdImport.update({
+  id: '/hunt/$huntId',
+  path: '/hunt/$huntId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -221,6 +228,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditHuntIdImport
       parentRoute: typeof rootRoute
     }
+    '/hunt/$huntId': {
+      id: '/hunt/$huntId'
+      path: '/hunt/$huntId'
+      fullPath: '/hunt/$huntId'
+      preLoaderRoute: typeof HuntHuntIdImport
+      parentRoute: typeof rootRoute
+    }
     '/verify/$email': {
       id: '/verify/$email'
       path: '/verify/$email'
@@ -328,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/route-b': typeof DashboardRouteBRoute
   '/dashboard/transactions': typeof DashboardTransactionsRoute
   '/edit/$huntId': typeof EditHuntIdRoute
+  '/hunt/$huntId': typeof HuntHuntIdRoute
   '/verify/$email': typeof VerifyEmailRoute
   '/create': typeof CreateIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -349,6 +364,7 @@ export interface FileRoutesByTo {
   '/dashboard/route-b': typeof DashboardRouteBRoute
   '/dashboard/transactions': typeof DashboardTransactionsRoute
   '/edit/$huntId': typeof EditHuntIdRoute
+  '/hunt/$huntId': typeof HuntHuntIdRoute
   '/verify/$email': typeof VerifyEmailRoute
   '/create': typeof CreateIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -372,6 +388,7 @@ export interface FileRoutesById {
   '/dashboard/route-b': typeof DashboardRouteBRoute
   '/dashboard/transactions': typeof DashboardTransactionsRoute
   '/edit/$huntId': typeof EditHuntIdRoute
+  '/hunt/$huntId': typeof HuntHuntIdRoute
   '/verify/$email': typeof VerifyEmailRoute
   '/create/': typeof CreateIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -396,6 +413,7 @@ export interface FileRouteTypes {
     | '/dashboard/route-b'
     | '/dashboard/transactions'
     | '/edit/$huntId'
+    | '/hunt/$huntId'
     | '/verify/$email'
     | '/create'
     | '/dashboard/'
@@ -416,6 +434,7 @@ export interface FileRouteTypes {
     | '/dashboard/route-b'
     | '/dashboard/transactions'
     | '/edit/$huntId'
+    | '/hunt/$huntId'
     | '/verify/$email'
     | '/create'
     | '/dashboard'
@@ -437,6 +456,7 @@ export interface FileRouteTypes {
     | '/dashboard/route-b'
     | '/dashboard/transactions'
     | '/edit/$huntId'
+    | '/hunt/$huntId'
     | '/verify/$email'
     | '/create/'
     | '/dashboard/'
@@ -455,6 +475,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   EditHuntIdRoute: typeof EditHuntIdRoute
+  HuntHuntIdRoute: typeof HuntHuntIdRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   CreateIndexRoute: typeof CreateIndexRoute
   JoinIndexRoute: typeof JoinIndexRoute
@@ -468,6 +489,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   EditHuntIdRoute: EditHuntIdRoute,
+  HuntHuntIdRoute: HuntHuntIdRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   CreateIndexRoute: CreateIndexRoute,
   JoinIndexRoute: JoinIndexRoute,
@@ -490,6 +512,7 @@ export const routeTree = rootRoute
         "/login",
         "/signup",
         "/edit/$huntId",
+        "/hunt/$huntId",
         "/verify/$email",
         "/create/",
         "/join/",
@@ -542,6 +565,9 @@ export const routeTree = rootRoute
     },
     "/edit/$huntId": {
       "filePath": "edit/$huntId.tsx"
+    },
+    "/hunt/$huntId": {
+      "filePath": "hunt/$huntId.tsx"
     },
     "/verify/$email": {
       "filePath": "verify.$email.tsx"

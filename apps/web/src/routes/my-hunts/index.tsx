@@ -1,4 +1,5 @@
-// routes/my-hunts.tsx
+"use client"
+
 import { useState, useEffect } from "react"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { BackLink } from "@/components/ui/backLink"
@@ -9,8 +10,9 @@ import { Button } from "@/components/ui/button"
 import { Users, Pencil, Trash2, LogOutIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Hunt } from "@/lib/types"
+import type { Hunt } from "@/lib/types"
 import { HuntList } from "@/components/hunt/huntList"
+import { ShareButton } from "@/components/hunt/ShareButton"
 import { useAuth } from "@/hooks/useAuth"
 
 export const Route = createFileRoute("/my-hunts/")({
@@ -82,11 +84,9 @@ function MyHunts() {
 
   const renderCreatedActions = (hunt: Hunt) => (
     <div className="flex space-x-2 w-full justify-end">
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => hunt.id && handleParticipantsClick(hunt.id)}
-      >
+      {hunt.id && <ShareButton huntId={hunt.id} />}
+
+      <Button variant="outline" size="icon" onClick={() => hunt.id && handleParticipantsClick(hunt.id)}>
         <Users className="h-4 w-4" />
       </Button>
       <Button asChild variant="outline" size="icon">

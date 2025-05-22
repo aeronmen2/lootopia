@@ -22,6 +22,18 @@ function JoinHunt() {
       try {
         const Hunts = await huntsApi.list()
         setAvailableHunts(Hunts.data || [])
+        setAvailableHunts((prev) =>
+          prev.filter((hunt) => {
+            return (
+              (hunt.status !== "draft" && 
+                hunt.status !== "closed" && 
+                hunt.endDate && 
+                new Date(hunt.endDate) > new Date() &&
+                hunt.mode !== "private"
+              )
+            )
+          }
+        ))
       } catch (error) {
         console.error("Failed to fetch hunts:", error)
       }
