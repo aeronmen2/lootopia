@@ -315,6 +315,7 @@ export class AuthService {
       photoUrl: user.photoUrl,
       website: user.website,
       bio: user.bio,
+      role: user.role,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     }

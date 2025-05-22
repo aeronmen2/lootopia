@@ -6,17 +6,32 @@ import { useRouter } from "@tanstack/react-router"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card } from "@/components/ui/card"
 import { userSchema } from "@/lib/types"
 import { Loader2, CheckCircle } from "lucide-react"
-import { useCurrentUser } from "@/hooks/query/useAuthQueries"
+import { useAuth } from "@/hooks/useAuth"
 import useToast from "@/hooks/useToast"
 import { authApi } from "@/api/auth"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
 
 type ProfileFormProps = {
   section: "general" | "contact" | "security"
@@ -26,7 +41,7 @@ export function UserForm({ section }: ProfileFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const { data: user } = useCurrentUser()
+  const { user } = useAuth()
   const { toast } = useToast()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -36,10 +51,16 @@ export function UserForm({ section }: ProfileFormProps) {
       await authApi.logout()
       await authApi.delete(user.id)
       setIsModalOpen(false)
-      toast.success({ title: "Succès", message: "Compte supprimé avec succès !" })
+      toast.success({
+        title: "Succès",
+        message: "Compte supprimé avec succès !",
+      })
       router.navigate({ to: "/login" })
     } catch {
-      toast.error({ title: "Erreur", message: "Impossible de supprimer le compte." })
+      toast.error({
+        title: "Erreur",
+        message: "Impossible de supprimer le compte.",
+      })
     }
   }
 
@@ -112,12 +133,15 @@ export function UserForm({ section }: ProfileFormProps) {
     if (!user || !("id" in user)) return
 
     try {
-        await authApi.update(user.id, data)
+      await authApi.update(user.id, data)
 
-        toast.success({ title: "Succès", message: "Profile mis à jour avec succès !" })
-        setIsSuccess(true)
+      toast.success({
+        title: "Succès",
+        message: "Profile mis à jour avec succès !",
+      })
+      setIsSuccess(true)
     } catch {
-        toast.error({ title: "Erreur", message: "Mise à jour impossible." })
+      toast.error({ title: "Erreur", message: "Mise à jour impossible." })
     }
 
     setIsSubmitting(false)
@@ -128,22 +152,25 @@ export function UserForm({ section }: ProfileFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(
-    onSubmit,
-    (errors) => {
-      console.log("Validation failed:", errors)
-    }
-  )} className="space-y-6">
-        {section === "general" && (
+      <form
+        onSubmit={form.handleSubmit(onSubmit, (errors) => {
+          console.log("Validation failed:", errors)
+        })}
+        className="space-y-6"
+      >
+        {section === "general" && user && (
           <>
             <div className="flex flex-col md:flex-row gap-6 items-start">
               <Card className="p-4 border border-dashed flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src={user.photoUrl || "/placeholder.svg"} alt={user.name} />
+                    <AvatarImage
+                      src={user.photoUrl || "/placeholder.svg"}
+                      alt={user.name}
+                    />
                     <AvatarFallback>
-                      {user.name.charAt(0)}
-                      {user.lastname.charAt(0)}
+                      {user.name?.charAt(0)}
+                      {user.lastname?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   <Button variant="outline" size="sm">
@@ -190,9 +217,14 @@ export function UserForm({ section }: ProfileFormProps) {
                     <FormItem>
                       <FormLabel>Nom d'utilisateur</FormLabel>
                       <FormControl>
-                        <Input placeholder="Votre nom d'utilisateur" {...field} />
+                        <Input
+                          placeholder="Votre nom d'utilisateur"
+                          {...field}
+                        />
                       </FormControl>
-                      <FormDescription>Votre nom d'utilisateur unique sur la plateforme.</FormDescription>
+                      <FormDescription>
+                        Votre nom d'utilisateur unique sur la plateforme.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -207,7 +239,11 @@ export function UserForm({ section }: ProfileFormProps) {
                 <FormItem>
                   <FormLabel>Biographie</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Parlez-nous de vous..." className="min-h-[120px]" {...field} />
+                    <Textarea
+                      placeholder="Parlez-nous de vous..."
+                      className="min-h-[120px]"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>Maximum 500 caractères.</FormDescription>
                   <FormMessage />
@@ -323,7 +359,7 @@ export function UserForm({ section }: ProfileFormProps) {
           </>
         )}
 
-        {section === "security" && (
+        {section === "security" && user && (
           <div className="space-y-4">
             <FormField
               control={form.control}
@@ -356,13 +392,26 @@ export function UserForm({ section }: ProfileFormProps) {
             <div className="pt-4">
               <h3 className="font-medium mb-2">Sécurité du compte</h3>
               <div className="space-y-2">
-                <Button variant="outline" type="button" className="w-full justify-start">
+                <Button
+                  variant="outline"
+                  type="button"
+                  className="w-full justify-start"
+                >
                   Changer le mot de passe
                 </Button>
-                <Button variant="outline" type="button" className="w-full justify-start">
+                <Button
+                  variant="outline"
+                  type="button"
+                  className="w-full justify-start"
+                >
                   Activer l'authentification à deux facteurs
                 </Button>
-                <Button variant="destructive" type="button" className="w-full justify-start" onClick={() => setIsModalOpen(true)}>
+                <Button
+                  variant="destructive"
+                  type="button"
+                  className="w-full justify-start"
+                  onClick={() => setIsModalOpen(true)}
+                >
                   Supprimer le compte
                 </Button>
               </div>
@@ -388,7 +437,8 @@ export function UserForm({ section }: ProfileFormProps) {
             <DialogHeader>
               <DialogTitle>Confirmer la suppression</DialogTitle>
               <DialogDescription>
-                Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.
+                Êtes-vous sûr de vouloir supprimer votre compte ? Cette action
+                est irréversible.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

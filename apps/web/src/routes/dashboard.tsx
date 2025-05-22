@@ -13,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarSeparator,
 } from "@/components/ui/sidebar"
+import { useRole } from "@/hooks/useRole"
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: async ({ context, location }) => {
@@ -36,6 +37,8 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardLayoutComponent() {
   const { user, logout } = useAuth()
+
+  const canCreateHunt = useRole("admin", "organizer")
 
   return (
     <SidebarProvider>
@@ -167,6 +170,21 @@ function DashboardLayoutComponent() {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+
+            {/* Hunt Creation Button: Only for admin or organizer */}
+            {canCreateHunt && (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  className="px-3 py-2.5 font-medium bg-blue-100 hover:bg-blue-200 text-blue-800"
+                >
+                  <Link to="/create">
+                    <span className="mr-2">➕</span>
+                    <span>Créer une chasse</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
           </SidebarMenu>
 
           <SidebarFooter className="mt-auto border-t">
