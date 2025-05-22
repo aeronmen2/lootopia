@@ -1,10 +1,12 @@
 import type { Context, Next } from "hono"
 
-type Role = "admin" | "user" | "moderator"
+type Role = "admin" | "organizer" | "player"
 
 export function roleMiddleware(allowedRoles: Role[]) {
   return async function (c: Context, next: Next) {
     const user = c.get("user")
+
+    console.log("User in roleMiddleware:", user)
 
     if (!user || !user.role) {
       return c.json(
