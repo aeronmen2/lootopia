@@ -20,6 +20,8 @@ function CreateHunt() {
   const { user } = useAuth()
   const { toast } = useToast()
 
+  console.log(user)
+
   const canCreateHunt = useRole("admin", "organizer")
 
   if (!canCreateHunt) {

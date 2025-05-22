@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useBalance } from "@/hooks/query/useBalanceQuery"
+import { useRole } from "@/hooks/useRole"
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardIndexComponent,
@@ -7,6 +8,8 @@ export const Route = createFileRoute("/dashboard/")({
 
 function DashboardIndexComponent() {
   const { data: userBalance } = useBalance()
+
+  const canCreateHunt = useRole("admin", "organizer")
 
   return (
     <div className="p-4">
@@ -48,20 +51,21 @@ function DashboardIndexComponent() {
             Voir la boutique →
           </Link>
         </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-lg font-semibold mb-4">Chasses au trésor</h2>
-          <p className="text-muted-foreground mb-4">
-            Participez à des chasses au trésor passionnantes ou créez les
-            vôtres.
-          </p>
-          <Link
-            to="/create"
-            className="inline-flex items-center text-primary hover:text-primary/90 font-medium"
-          >
-            Créer une chasse →
-          </Link>
-        </div>
+        {canCreateHunt && (
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <h2 className="text-lg font-semibold mb-4">Chasses au trésor</h2>
+            <p className="text-muted-foreground mb-4">
+              Participez à des chasses au trésor passionnantes ou créez les
+              vôtres.
+            </p>
+            <Link
+              to="/create"
+              className="inline-flex items-center text-primary hover:text-primary/90 font-medium"
+            >
+              Créer une chasse →
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   )
