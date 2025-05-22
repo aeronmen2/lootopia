@@ -219,6 +219,8 @@ export async function getCurrentUser(c: Context) {
     const userId = c.get("userId")
     const user = c.get("user")
 
+    console.log(user)
+
     return c.json(
       {
         status: "success",

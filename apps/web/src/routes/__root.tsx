@@ -30,9 +30,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootComponent() {
   const { user, isConnected, logout } = useAuth()
+
   const matches = useMatches()
 
-  // Check if we're on a dashboard route
   const isDashboard = matches.some((match) =>
     match.routeId.includes("/dashboard"),
   )

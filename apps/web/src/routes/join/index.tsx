@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
 import { huntsApi } from "@/api/hunt"
 import { Hunt } from "@/lib/types"
-import { useCurrentUser } from "@/hooks/query/useAuthQueries"
 import useToast from "@/hooks/useToast"
 import { HuntList } from "@/components/hunt/huntList"
 import { BackLink } from "@/components/ui/backLink"
 import { createFileRoute } from "@tanstack/react-router"
+import { useAuth } from "@/hooks/useAuth"
 
 export const Route = createFileRoute("/join/")({
   component: JoinHunt,
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/join/")({
 function JoinHunt() {
   const [availableHunts, setAvailableHunts] = useState<Hunt[]>([])
   const [joiningHuntId, setJoiningHuntId] = useState<string | null>(null)
-  const { data: user } = useCurrentUser()
+  const { user } = useAuth()
   const { toast } = useToast()
 
   useEffect(() => {
@@ -66,8 +66,8 @@ function JoinHunt() {
         prev.map((hunt) =>
           hunt.id === huntId
             ? { ...hunt, nbParticipants: (hunt.nbParticipants || 0) + 1 }
-            : hunt
-        )
+            : hunt,
+        ),
       )
     } catch (error) {
       console.error("Failed to join hunt:", error)

@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { z } from "zod"
 import { huntSchema } from "@/lib/types"
-import { useCurrentUser } from "@/hooks/query/useAuthQueries"
+import { useAuth } from "@/hooks/useAuth"
 
 type HuntFormData = Omit<z.infer<typeof huntSchema>, "organizerId">
 
@@ -25,7 +25,11 @@ interface HuntFormProps {
   submitLabel?: string
 }
 
-export function HuntForm({ initialData, onSubmit, submitLabel = "Valider" }: HuntFormProps) {
+export function HuntForm({
+  initialData,
+  onSubmit,
+  submitLabel = "Valider",
+}: HuntFormProps) {
   const [formData, setFormData] = useState<HuntFormData>({
     title: "",
     description: "",
@@ -39,9 +43,12 @@ export function HuntForm({ initialData, onSubmit, submitLabel = "Valider" }: Hun
     ...initialData,
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const { data: user } = useCurrentUser()
+  const { user } = useAuth()
 
-  const handleChange = (field: keyof HuntFormData, value: HuntFormData[keyof HuntFormData]) => {
+  const handleChange = (
+    field: keyof HuntFormData,
+    value: HuntFormData[keyof HuntFormData],
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
     if (errors[field]) {
       setErrors((prev) => {
@@ -95,7 +102,9 @@ export function HuntForm({ initialData, onSubmit, submitLabel = "Valider" }: Hun
           placeholder="Description de la chasse"
           className={errors.description ? "border-red-500" : ""}
         />
-        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+        {errors.description && (
+          <p className="text-red-500 text-sm">{errors.description}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -136,7 +145,10 @@ export function HuntForm({ initialData, onSubmit, submitLabel = "Valider" }: Hun
 
       <div className="space-y-2">
         <Label>Statut *</Label>
-        <Select value={formData.status} onValueChange={(value) => handleChange("status", value)}>
+        <Select
+          value={formData.status}
+          onValueChange={(value) => handleChange("status", value)}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Sélectionner un statut" />
           </SelectTrigger>
@@ -163,9 +175,16 @@ export function HuntForm({ initialData, onSubmit, submitLabel = "Valider" }: Hun
         <Input
           id="endDate"
           type="datetime-local"
-          value={formData.endDate ? new Date(formData.endDate).toISOString().slice(0, 16) : ""}
+          value={
+            formData.endDate
+              ? new Date(formData.endDate).toISOString().slice(0, 16)
+              : ""
+          }
           onChange={(e) =>
-            handleChange("endDate", e.target.value ? new Date(e.target.value) : undefined)
+            handleChange(
+              "endDate",
+              e.target.value ? new Date(e.target.value) : undefined,
+            )
           }
         />
       </div>
@@ -193,7 +212,9 @@ export function HuntForm({ initialData, onSubmit, submitLabel = "Valider" }: Hun
           type="number"
           min="0"
           value={formData.feeCrowns}
-          onChange={(e) => handleChange("feeCrowns", Number.parseInt(e.target.value))}
+          onChange={(e) =>
+            handleChange("feeCrowns", Number.parseInt(e.target.value))
+          }
         />
       </div>
 

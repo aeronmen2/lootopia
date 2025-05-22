@@ -18,10 +18,17 @@ export const huntSchema = z.object({
 })
 
 export const userSchema = z.object({
+  id: z.string().uuid().optional(),
   // Basic info
   name: z.string().min(2, "Name must be at least 2 characters").optional(),
-  lastname: z.string().min(2, "Lastname must be at least 2 characters").optional(),
-  username: z.string().min(2, "Username must be at least 2 characters").optional(),
+  lastname: z
+    .string()
+    .min(2, "Lastname must be at least 2 characters")
+    .optional(),
+  username: z
+    .string()
+    .min(2, "Username must be at least 2 characters")
+    .optional(),
   email: z.string().email("Invalid email format").optional(),
 
   // Verification (usually handled internally, but included for completeness)
@@ -42,6 +49,9 @@ export const userSchema = z.object({
   photoUrl: z.string().optional(),
   bio: z.string().max(500, "Bio must be 500 characters or less").optional(),
   website: z.string().optional(),
+
+  // Role
+  role: z.string().optional(),
 
   // Optional timestamps (not usually provided on update)
   createdAt: z.coerce.date().optional(),

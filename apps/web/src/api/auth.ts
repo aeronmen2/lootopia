@@ -64,3 +64,5 @@ export const authApi = {
     return api("/api/auth/me")
   },
 }
+
+export type { User }

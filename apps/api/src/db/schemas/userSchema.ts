@@ -29,6 +29,9 @@ export const users = pgTable("users", {
   bio: text("bio"),
   website: text("website"),
 
+  // Role
+  role: text("role").notNull().default("player"), // allowed: 'admin', 'organizer', 'player'
+
   // Timestamps
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

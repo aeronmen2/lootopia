@@ -5,7 +5,6 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import { BackLink } from "@/components/ui/backLink"
 import { ParticipantDialog } from "@/components/hunt/participantDialog"
 import { huntsApi } from "@/api/hunt"
-import { useCurrentUser } from "@/hooks/query/useAuthQueries"
 import useToast from "@/hooks/useToast"
 import { Button } from "@/components/ui/button"
 import { Users, Pencil, Trash2, LogOutIcon } from "lucide-react"
@@ -14,13 +13,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { Hunt } from "@/lib/types"
 import { HuntList } from "@/components/hunt/huntList"
 import { ShareButton } from "@/components/hunt/ShareButton"
+import { useAuth } from "@/hooks/useAuth"
 
 export const Route = createFileRoute("/my-hunts/")({
   component: MyHunts,
 })
 
 function MyHunts() {
-  const { data: user } = useCurrentUser()
+  const { user } = useAuth()
   const { toast } = useToast()
   const [createdHunts, setCreatedHunts] = useState<Hunt[]>()
   const [joinedHunts, setJoinedHunts] = useState<Hunt[]>()
@@ -37,7 +37,10 @@ function MyHunts() {
         setCreatedHunts(created.data || [])
         setJoinedHunts(joined.data || [])
       } catch {
-        toast.error({ title: "Erreur", message: "Chargement des chasses impossible." })
+        toast.error({
+          title: "Erreur",
+          message: "Chargement des chasses impossible.",
+        })
       }
     }
     fetch()
@@ -58,7 +61,10 @@ function MyHunts() {
       const res = await huntsApi.getParticipants(huntId)
       setParticipants((res.data || []) as Participant[])
     } catch {
-      toast.error({ title: "Erreur", message: "Chargement des participants impossible." })
+      toast.error({
+        title: "Erreur",
+        message: "Chargement des participants impossible.",
+      })
     } finally {
       setIsLoadingParticipants(false)
     }
@@ -97,9 +103,14 @@ function MyHunts() {
             if (hunt.id) {
               await huntsApi.delete(hunt.id)
             } else {
-              toast.error({ title: "Erreur", message: "ID de chasse manquant." })
+              toast.error({
+                title: "Erreur",
+                message: "ID de chasse manquant.",
+              })
             }
-            setCreatedHunts((prev) => (prev || []).filter((h) => h.id !== hunt.id))
+            setCreatedHunts((prev) =>
+              (prev || []).filter((h) => h.id !== hunt.id),
+            )
             toast.success({ title: "Succès", message: "Chasse supprimée." })
           } catch {
             toast.error({ title: "Erreur", message: "Suppression impossible." })
@@ -123,10 +134,15 @@ function MyHunts() {
         onClick={async () => {
           try {
             await huntsApi.deleteParticipant(hunt.id, user?.id)
-            setJoinedHunts((prev) => (prev || []).filter((h) => h.id !== hunt.id))
+            setJoinedHunts((prev) =>
+              (prev || []).filter((h) => h.id !== hunt.id),
+            )
             toast.success({ title: "Succès", message: "Chasse quittée." })
           } catch {
-            toast.error({ title: "Erreur", message: "Quitter la chasse a échoué." })
+            toast.error({
+              title: "Erreur",
+              message: "Quitter la chasse a échoué.",
+            })
           }
         }}
       >
