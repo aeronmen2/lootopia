@@ -8,8 +8,11 @@ export class MapService {
   static async create(mapData: HuntMapDto): Promise<Map> {
     const newMap = await db.insert(map).values({
       ...mapData,
-      scaleMin: mapData.scaleMin?.toString(),
-      scaleMax: mapData.scaleMax?.toString(),
+      bearing: mapData.bearing?.toString(),
+      lng: mapData.lng?.toString(),
+      lat: mapData.lat?.toString(),
+      zoom: mapData.zoom?.toString(),
+      pitch: mapData.pitch?.toString(),
     }).returning();
     
     return newMap[0];
@@ -39,8 +42,11 @@ export class MapService {
       .update(map)
       .set({
         ...mapData,
-        scaleMin: mapData.scaleMin?.toString(),
-        scaleMax: mapData.scaleMax?.toString(),
+        bearing: mapData.bearing?.toString(),
+        lng: mapData.lng?.toString(),
+        lat: mapData.lat?.toString(),
+        zoom: mapData.zoom?.toString(),
+        pitch: mapData.pitch?.toString(),
       })
       .where(eq(map.id, mapId))
       .returning();

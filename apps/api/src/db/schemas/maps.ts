@@ -5,9 +5,11 @@ export const map = pgTable("map", {
   huntId: uuid("hunt_id").notNull(), // FK vers hunts
   name: text("name"),
   skin: text("skin"),
-  zone: text("zone"),
-  scaleMin: numeric("scale_min"),
-  scaleMax: numeric("scale_max"),
+  bearing: numeric("bearing").notNull(),
+  lng: numeric("lng").notNull(),
+  lat: numeric("lat").notNull(),
+  zoom: numeric("zoom").notNull(),
+  pitch: numeric("pitch").notNull(),
   isForDig: boolean("is_for_dig").default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
