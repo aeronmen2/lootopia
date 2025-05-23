@@ -3,8 +3,7 @@ import { z } from "zod";
 import type { Cache } from "../db/schemas/caches";
 
 export const cacheSchema = z.object({
-  huntId: z.string().uuid(),
-  mapId: z.string().uuid().optional().nullable(),
+  stepId: z.string().uuid().optional().nullable(),
   lat: z.string().refine(val => !isNaN(Number(val)), "Invalid latitude"),
   lng: z.string().refine(val => !isNaN(Number(val)), "Invalid longitude"),
   sizeCm: z.number().int().min(20).max(200).default(80),

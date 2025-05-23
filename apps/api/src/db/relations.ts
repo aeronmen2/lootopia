@@ -1,14 +1,6 @@
 import { relations } from "drizzle-orm"
 import {
-  users,
-  authTokens,
-  sessions,
-  hunts,
-  huntParticipants,
-  huntMaps,
-  huntMarkers,
-  caches,
-  digActions,
+  users, authTokens, sessions, hunts, participant, map, cache, dig, artefact, userArtefact, exchange, userStep, step
 } from "./schemas"
 
 // Utilisateurs
@@ -16,7 +8,10 @@ export const usersRelations = relations(users, ({ many }) => ({
   authTokens: many(authTokens),
   sessions: many(sessions),
 
-  huntParticipants: many(huntParticipants),
+  participant: many(participant),
+  exchange: many(exchange),
+  userArtefact: many(userArtefact),
+  userStep: many(userStep),
 }))
 
 // AuthTokens (inchangé)
@@ -41,62 +36,109 @@ export const huntsRelations = relations(hunts, ({ many, one }) => ({
     fields: [hunts.organizerId],
     references: [users.id],
   }),
-  huntParticipants: many(huntParticipants),
-  huntMaps: many(huntMaps),
-  caches: many(caches),
+  participant: many(participant),
+  map: many(map),
+  cache: many(cache),
+  userArtefact: many(userArtefact),
 }))
 
 // Participants à une chasse
-export const huntParticipantsRelations = relations(huntParticipants, ({ one }) => ({
+export const participantRelations = relations(participant, ({ one }) => ({
   hunt: one(hunts, {
-    fields: [huntParticipants.huntId],
+    fields: [participant.huntId],
     references: [hunts.id],
   }),
   user: one(users, {
-    fields: [huntParticipants.userId],
+    fields: [participant.userId],
     references: [users.id],
   }),
 }))
 
 // Cartes de chasse
-export const huntMapsRelations = relations(huntMaps, ({ one, many }) => ({
+export const mapRelations = relations(map, ({ one, many }) => ({
   hunt: one(hunts, {
-    fields: [huntMaps.huntId],
+    fields: [map.huntId],
     references: [hunts.id],
   }),
-  huntMarkers: many(huntMarkers),
-  caches: many(caches),
+  step: many(step),
 }))
 
-// Repères sur carte
-export const huntMarkersRelations = relations(huntMarkers, ({ one }) => ({
-  map: one(huntMaps, {
-    fields: [huntMarkers.mapId],
-    references: [huntMaps.id],
+// step
+export const stepRelations = relations(step, ({ one, many }) => ({
+  map: one(map, {
+    fields: [step.mapId],
+    references: [map.id],
   }),
+  cache: many(cache),
+  userStep: many(userStep),
 }))
 
-// Caches
-export const cachesRelations = relations(caches, ({ one, many }) => ({
-  hunt: one(hunts, {
-    fields: [caches.huntId],
-    references: [hunts.id],
+// cache
+export const cacheRelations = relations(cache, ({ one }) => ({
+  step: one(step, {
+    fields: [cache.stepId],
+    references: [step.id],
   }),
-  map: one(huntMaps, {
-    fields: [caches.mapId],
-    references: [huntMaps.id],
-  }),
-  digActions: many(digActions),
 }))
 
 // Actions de creusage
-export const digActionsRelations = relations(digActions, ({ one }) => ({
-  cache: one(caches, {
-    fields: [digActions.cacheId],
-    references: [caches.id],
+export const digRelations = relations(dig, ({ one }) => ({
+  cache: one(cache, {
+    fields: [dig.cacheId],
+    references: [cache.id],
   }),
   user: one(users, {
-    fields: [digActions.userId],
+    fields: [dig.userId],
     references: [users.id],
+  }),
+}))
+
+// exchange
+export const exchangeRelations = relations(exchange, ({ one }) => ({
+  userSender: one(users, {
+    fields: [exchange.userSender],
+    references: [users.id],
+  }),
+  userReceiver: one(users, {
+    fields: [exchange.userReceiver],
+    references: [users.id],
+  }),
+  Artefact: one(artefact, {
+    fields: [exchange.artefactId],
+    references: [artefact.id],
+  }),
+}))
+
+// Artefact
+export const artefactRelations = relations(artefact, ({ many }) => ({
+  exchange: many(exchange),
+  userArtefact: many(userArtefact),
+}))
+
+// UserArtefact
+export const userArtefactRelations = relations(userArtefact, ({ one }) => ({
+  user: one(users, {
+    fields: [userArtefact.userId],
+    references: [users.id],
+  }),
+  Artefact: one(artefact, {
+    fields: [userArtefact.artefactId],
+    references: [artefact.id],
+  }),
+  hunt: one(hunts, {
+    fields: [userArtefact.huntId],
+    references: [hunts.id],
+  }),
+}))
+
+// UserStep
+export const userStepRelations = relations(userStep, ({ one }) => ({
+  user: one(users, {
+    fields: [userStep.userId],
+    references: [users.id],
+  }),
+  step: one(step, {
+    fields: [userStep.stepId],
+    references: [step.id],
   }),
 }))
