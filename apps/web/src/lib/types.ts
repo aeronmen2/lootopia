@@ -51,12 +51,20 @@ export const userSchema = z.object({
   website: z.string().optional(),
 
   // Role
-  role: z.string().optional(),
+  role: z.string().optional(), // 'player', 'admin', 'organizer'
 
   // Optional timestamps (not usually provided on update)
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 })
 
+export const artefactSchema = z.object({
+  name: z.string().min(1, 'Le nom est requis'),
+  description: z.string().min(1, 'La description est requise'),
+  rarity: z.enum(['common', 'rare', 'epic', 'legendary']),
+  image: z.instanceof(File).optional(),
+});
+
+export type Artefact = z.infer<typeof artefactSchema>;
 export type Hunt = z.infer<typeof huntSchema>
 export type User = z.infer<typeof userSchema>

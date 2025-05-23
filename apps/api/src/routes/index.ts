@@ -8,6 +8,7 @@ import artefactRoutes from "./artefactRoutes"
 import { authMiddleware } from "../middleware/authMiddleware"
 import mapRouter from "./mapRoutes"
 import stepRouter from "./stepRoutes"
+import uploadRoutes from "./uploadRoutes"
 
 const router = new Hono()
 
@@ -22,5 +23,6 @@ router.route("/step", stepRouter)
 router.route("/caches", cacheRoutes)
 router.route("/payments", paymentRoutes)
 router.route("/artefacts", artefactRoutes)
+router.route("/upload", uploadRoutes)
 
 export default router
