@@ -1,12 +1,11 @@
 import { pgTable, uuid, timestamp, text, integer } from "drizzle-orm/pg-core"
 import { users } from "./userSchema"
-import { caches } from "./caches"
+import { cache } from "./caches"
 
-export const digActions = pgTable("dig_actions", {
+export const dig = pgTable("dig", {
   id: uuid("id").primaryKey().defaultRandom(),
   cacheId: uuid("cache_id")
-    .notNull()
-    .references(() => caches.id, { onDelete: "cascade" }),
+    .references(() => cache.id, { onDelete: "cascade" }),
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
@@ -17,5 +16,5 @@ export const digActions = pgTable("dig_actions", {
   crownsSpent: integer("crowns_spent").default(0),
 })
 
-export type DigAction = typeof digActions.$inferSelect
-export type DigActionInsert = typeof digActions.$inferInsert
+export type Dig = typeof dig.$inferSelect
+export type DigInsert = typeof dig.$inferInsert

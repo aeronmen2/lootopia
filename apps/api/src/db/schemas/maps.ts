@@ -1,6 +1,6 @@
 import { pgTable, uuid, text, boolean, timestamp, numeric } from "drizzle-orm/pg-core"
 
-export const huntMaps = pgTable("hunt_maps", {
+export const map = pgTable("map", {
   id: uuid("id").primaryKey().defaultRandom(),
   huntId: uuid("hunt_id").notNull(), // FK vers hunts
   name: text("name"),
@@ -12,5 +12,5 @@ export const huntMaps = pgTable("hunt_maps", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
-export type HuntMap = typeof huntMaps.$inferSelect
-export type HuntMapInsert = typeof huntMaps.$inferInsert
+export type Map = typeof map.$inferSelect
+export type MapInsert = typeof map.$inferInsert

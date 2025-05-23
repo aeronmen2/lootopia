@@ -2,8 +2,8 @@ import { pgTable, uuid, text, timestamp, unique } from "drizzle-orm/pg-core"
 import { hunts } from "./hunts"
 import { users } from "./userSchema"
 
-export const huntParticipants = pgTable(
-  "hunt_participants",
+export const participant = pgTable(
+  "participant",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     huntId: uuid("hunt_id")
@@ -21,5 +21,5 @@ export const huntParticipants = pgTable(
   })
 )
 
-export type HuntParticipant = typeof huntParticipants.$inferSelect
-export type HuntParticipantInsert = typeof huntParticipants.$inferInsert
+export type Participant = typeof participant.$inferSelect
+export type ParticipantInsert = typeof participant.$inferInsert

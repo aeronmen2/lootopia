@@ -1,7 +1,7 @@
 import type { Context } from "hono"
-import { DigActionModel } from "../models/dig_actions"
+import { DigModel } from "../models/dig"
 import { CacheService } from "../services/cacheService"
-import { DigActionService } from "../services/digActionService"
+import { DigService } from "../services/digService"
 import { CacheModel } from "../models/caches"
 
 export class CacheController {
@@ -76,30 +76,59 @@ export class CacheController {
         }
     }
 
-  static async logDig(c: Context) {
-    try {
-      const body = await c.req.json()
-      const validatedData = DigActionModel.validate(body)
-      
-      const dig = await DigActionService.logDig(validatedData)
+    static async getCachesByStepId(c: Context) {
+        try {
+            const stepId = c.req.param("stepId")
+            const caches = await CacheService.findByStepId(stepId)
 
-      
-        return c.json({ success: true, data: dig }, 201)
-    } catch (error) {
-      return CacheController.handleError(c, error, "Failed to log dig action")
+            if (!caches) {
+                return c.json({ success: false, message: "Caches not found" }, 404)
+            }
+
+            return c.json({ success: true, data: caches })
+        } catch (error) {
+            return CacheController.handleError(c, error, "Failed to fetch caches by step ID")
+        }
     }
-  }
 
   static async getCacheDigs(c: Context) {
     try {
       const cacheId = c.req.param("id")
-      const digs = await DigActionService.getByCache(cacheId)
+      const digs = await DigService.getByCache(cacheId)
       
       return c.json({ success: true, data: digs })
     } catch (error) {
       return CacheController.handleError(c, error, "Failed to fetch dig actions")
     }
   }
+
+static async createDig(c: Context) {
+    try {
+        const body = await c.req.json()
+        const validatedData = DigModel.validate(body)
+
+        const dig = await DigService.create(validatedData)
+
+        return c.json({ success: true, data: dig }, 201)
+    } catch (error) {
+        return CacheController.handleError(c, error, "Failed to create dig action")
+    }
+}
+
+    static async getDigsByUserId(c: Context) {
+        try {
+        const userId = c.req.param("userId")
+        const digs = await DigService.findByUserId(userId)
+    
+        if (!digs) {
+            return c.json({ success: false, message: "Digs not found" }, 404)
+        }
+    
+        return c.json({ success: true, data: digs })
+        } catch (error) {
+        return CacheController.handleError(c, error, "Failed to fetch digs by user ID")
+        }
+    }
 
   private static handleError(c: Context, error: unknown, message: string) {
     console.error(message + ":", error)

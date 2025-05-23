@@ -4,7 +4,7 @@ import { db } from "../db"
 import { hunts } from "../db/schemas/hunts"
 import type {Hunt} from "../db/schemas/hunts";
 import type { HuntDto } from "../models/hunts"
-import { huntParticipants } from "../db/schemas/hunt_participants";
+import { participant } from "../db/schemas/participants";
 export interface HuntWithParticipants extends Hunt {
   nbParticipants: number
 }
@@ -14,10 +14,10 @@ export class HuntService {
     const result = await db
       .select({
         hunt: hunts,
-        nbParticipants: count(huntParticipants.userId).as("nbParticipants"),
+        nbParticipants: count(participant.userId).as("nbParticipants"),
       })
       .from(hunts)
-      .leftJoin(huntParticipants, eq(hunts.id, huntParticipants.huntId))
+      .leftJoin(participant, eq(hunts.id, participant.huntId))
       .groupBy(hunts.id);
   
     return result.map(({ hunt, nbParticipants }) => ({
@@ -29,10 +29,10 @@ export class HuntService {
   static async findById(id: string): Promise<HuntWithParticipants | null> {
     const result = await db.select({
       hunt: hunts,
-      nbParticipants: count(huntParticipants.userId).as("nbParticipants"),
+      nbParticipants: count(participant.userId).as("nbParticipants"),
     })
     .from(hunts).where(eq(hunts.id, id))
-    .leftJoin(huntParticipants, eq(hunts.id, huntParticipants.huntId))
+    .leftJoin(participant, eq(hunts.id, participant.huntId))
     .groupBy(hunts.id);
 
     return result[0]
@@ -44,11 +44,11 @@ export class HuntService {
     const result = await db
       .select({
         hunt: hunts,
-        nbParticipants: count(huntParticipants.userId).as("nbParticipants"),
+        nbParticipants: count(participant.userId).as("nbParticipants"),
       })
       .from(hunts)
       .where(eq(hunts.organizerId, organizerId))
-      .leftJoin(huntParticipants, eq(hunts.id, huntParticipants.huntId))
+      .leftJoin(participant, eq(hunts.id, participant.huntId))
       .orderBy(hunts.startDate)
       .groupBy(hunts.id);
   

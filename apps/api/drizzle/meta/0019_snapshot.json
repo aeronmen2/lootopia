@@ -1,6 +1,6 @@
 {
-  "id": "5498c4cf-375d-4472-921e-ac3466ed1969",
-  "prevId": "ea3be6b9-edcd-4e93-bc81-35e34d5dbf43",
+  "id": "3fcc19a1-5906-4190-b70b-59e18d987a20",
+  "prevId": "5498c4cf-375d-4472-921e-ac3466ed1969",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -323,8 +323,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "artifact_id": {
-          "name": "artifact_id",
+        "artefact_id": {
+          "name": "artefact_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -352,12 +352,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "exchange_artifact_id_artefact_id_fk": {
-          "name": "exchange_artifact_id_artefact_id_fk",
+        "exchange_artefact_id_artefact_id_fk": {
+          "name": "exchange_artefact_id_artefact_id_fk",
           "tableFrom": "exchange",
           "tableTo": "artefact",
           "columnsFrom": [
-            "artifact_id"
+            "artefact_id"
           ],
           "columnsTo": [
             "id"
@@ -763,6 +763,91 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.user_artefact": {
+      "name": "user_artefact",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "artefact_id": {
+          "name": "artefact_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hunt_id": {
+          "name": "hunt_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "obtained_at": {
+          "name": "obtained_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_artefact_user_id_users_id_fk": {
+          "name": "user_artefact_user_id_users_id_fk",
+          "tableFrom": "user_artefact",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_artefact_artefact_id_artefact_id_fk": {
+          "name": "user_artefact_artefact_id_artefact_id_fk",
+          "tableFrom": "user_artefact",
+          "tableTo": "artefact",
+          "columnsFrom": [
+            "artefact_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_artefact_hunt_id_hunts_id_fk": {
+          "name": "user_artefact_hunt_id_hunts_id_fk",
+          "tableFrom": "user_artefact",
+          "tableTo": "hunts",
+          "columnsFrom": [
+            "hunt_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.userStep": {
       "name": "userStep",
       "schema": "",
@@ -1088,91 +1173,6 @@
             "id"
           ],
           "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.user_artefact": {
-      "name": "user_artefact",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "artifact_id": {
-          "name": "artifact_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "hunt_id": {
-          "name": "hunt_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "obtained_at": {
-          "name": "obtained_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "user_artefact_user_id_users_id_fk": {
-          "name": "user_artefact_user_id_users_id_fk",
-          "tableFrom": "user_artefact",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "user_artefact_artifact_id_artefact_id_fk": {
-          "name": "user_artefact_artifact_id_artefact_id_fk",
-          "tableFrom": "user_artefact",
-          "tableTo": "artefact",
-          "columnsFrom": [
-            "artifact_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "user_artefact_hunt_id_hunts_id_fk": {
-          "name": "user_artefact_hunt_id_hunts_id_fk",
-          "tableFrom": "user_artefact",
-          "tableTo": "hunts",
-          "columnsFrom": [
-            "hunt_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },

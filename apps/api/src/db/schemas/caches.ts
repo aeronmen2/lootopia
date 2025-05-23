@@ -1,13 +1,11 @@
 import { pgTable, uuid, numeric, boolean, integer, timestamp } from "drizzle-orm/pg-core"
-import { huntMaps } from "./hunt_maps"
-import { hunts } from "./hunts"
+import { step } from "./steps"
 
-export const caches = pgTable("caches", {
+export const cache = pgTable("cache", {
   id: uuid("id").primaryKey().defaultRandom(),
-  huntId: uuid("hunt_id")
+  stepId: uuid("step_id")
     .notNull()
-    .references(() => hunts.id, { onDelete: "cascade" }),
-  mapId: uuid("map_id").references(() => huntMaps.id),
+    .references(() => step.id, { onDelete: "cascade" }),
   lat: numeric("lat").notNull(),
   lng: numeric("lng").notNull(),
   sizeCm: integer("size_cm").default(80),
@@ -17,5 +15,5 @@ export const caches = pgTable("caches", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
 
-export type Cache = typeof caches.$inferSelect
-export type CacheInsert = typeof caches.$inferInsert
+export type Cache = typeof cache.$inferSelect
+export type CacheInsert = typeof cache.$inferInsert

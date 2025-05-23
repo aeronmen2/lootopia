@@ -2,13 +2,14 @@ import { Hono } from "hono"
 import { CacheController } from "../controllers/cacheController"
 import { zValidator } from "@hono/zod-validator"
 import { cacheSchema } from "../models/caches"
-import { digActionSchema } from "../models/dig_actions"
 
 const cacheRouter = new Hono()
 
 cacheRouter.get("/", CacheController.getAll)
 cacheRouter.get("/:id", CacheController.getCacheDetails)
-cacheRouter.get("/:id/dig", CacheController.getCacheDigs)
+cacheRouter.get("/step/:stepId", CacheController.getCachesByStepId)
+cacheRouter.get("/:id/digs", CacheController.getCacheDigs)
+cacheRouter.get("/user/:userId/digs", CacheController.getDigsByUserId)
 
 cacheRouter.post(
   "/",
@@ -16,11 +17,7 @@ cacheRouter.post(
   CacheController.create,
 )
 
-cacheRouter.post(
-    "/:id/dig",
-    zValidator("json", digActionSchema),
-    CacheController.logDig,
-)
+cacheRouter.post("/digs", CacheController.createDig)
 
 cacheRouter.patch(
   "/:id",

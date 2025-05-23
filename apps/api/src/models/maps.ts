@@ -1,6 +1,6 @@
 // hunt-map.model.ts
 import { z } from "zod";
-import type { HuntMap } from "../db/schemas/hunt_maps";
+import type { Map } from "../db/schemas/maps";
 
 export const huntMapSchema = z.object({
   huntId: z.string().uuid(),
@@ -16,7 +16,7 @@ export const huntMapSchema = z.object({
 export type HuntMapDto = z.infer<typeof huntMapSchema>;
 
 export class HuntMapModel {
-  static formatResponse(map: HuntMap): HuntMap {
+  static formatResponse(map: Map): Map {
     return map;
   }
 

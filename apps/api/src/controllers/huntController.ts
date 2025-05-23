@@ -1,7 +1,7 @@
 import type { Context } from "hono"
 import { HuntModel } from "../models/hunts"
 import { HuntService } from "../services/huntService"
-import { HuntParticipantModel } from "../models/hunt_participants"
+import { HuntParticipantModel } from "../models/participants"
 import { HuntParticipantService } from "../services/huntParticipantService"
 
 export class HuntController {
