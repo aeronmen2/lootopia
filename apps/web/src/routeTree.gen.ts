@@ -27,6 +27,7 @@ import { Route as DashboardTransactionsImport } from './routes/dashboard/transac
 import { Route as DashboardRouteBImport } from './routes/dashboard/route-b'
 import { Route as DashboardRouteAImport } from './routes/dashboard/route-a'
 import { Route as DashboardMarketplaceImport } from './routes/dashboard/marketplace'
+import { Route as DashboardCreateArtifactImport } from './routes/dashboard/create-artifact'
 import { Route as DashboardBuyCurrencyImport } from './routes/dashboard/buy-currency'
 import { Route as DashboardPaymentIndexImport } from './routes/dashboard/payment/index'
 import { Route as DashboardPaymentSuccessImport } from './routes/dashboard/payment/success'
@@ -130,6 +131,12 @@ const DashboardMarketplaceRoute = DashboardMarketplaceImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 
+const DashboardCreateArtifactRoute = DashboardCreateArtifactImport.update({
+  id: '/create-artifact',
+  path: '/create-artifact',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
 const DashboardBuyCurrencyRoute = DashboardBuyCurrencyImport.update({
   id: '/buy-currency',
   path: '/buy-currency',
@@ -191,6 +198,13 @@ declare module '@tanstack/react-router' {
       path: '/buy-currency'
       fullPath: '/dashboard/buy-currency'
       preLoaderRoute: typeof DashboardBuyCurrencyImport
+      parentRoute: typeof DashboardImport
+    }
+    '/dashboard/create-artifact': {
+      id: '/dashboard/create-artifact'
+      path: '/create-artifact'
+      fullPath: '/dashboard/create-artifact'
+      preLoaderRoute: typeof DashboardCreateArtifactImport
       parentRoute: typeof DashboardImport
     }
     '/dashboard/marketplace': {
@@ -305,6 +319,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardBuyCurrencyRoute: typeof DashboardBuyCurrencyRoute
+  DashboardCreateArtifactRoute: typeof DashboardCreateArtifactRoute
   DashboardMarketplaceRoute: typeof DashboardMarketplaceRoute
   DashboardRouteARoute: typeof DashboardRouteARoute
   DashboardRouteBRoute: typeof DashboardRouteBRoute
@@ -317,6 +332,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardBuyCurrencyRoute: DashboardBuyCurrencyRoute,
+  DashboardCreateArtifactRoute: DashboardCreateArtifactRoute,
   DashboardMarketplaceRoute: DashboardMarketplaceRoute,
   DashboardRouteARoute: DashboardRouteARoute,
   DashboardRouteBRoute: DashboardRouteBRoute,
@@ -337,6 +353,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard/buy-currency': typeof DashboardBuyCurrencyRoute
+  '/dashboard/create-artifact': typeof DashboardCreateArtifactRoute
   '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/route-a': typeof DashboardRouteARoute
   '/dashboard/route-b': typeof DashboardRouteBRoute
@@ -359,6 +376,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard/buy-currency': typeof DashboardBuyCurrencyRoute
+  '/dashboard/create-artifact': typeof DashboardCreateArtifactRoute
   '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/route-a': typeof DashboardRouteARoute
   '/dashboard/route-b': typeof DashboardRouteBRoute
@@ -383,6 +401,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard/buy-currency': typeof DashboardBuyCurrencyRoute
+  '/dashboard/create-artifact': typeof DashboardCreateArtifactRoute
   '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/route-a': typeof DashboardRouteARoute
   '/dashboard/route-b': typeof DashboardRouteBRoute
@@ -408,6 +427,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/dashboard/buy-currency'
+    | '/dashboard/create-artifact'
     | '/dashboard/marketplace'
     | '/dashboard/route-a'
     | '/dashboard/route-b'
@@ -429,6 +449,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/dashboard/buy-currency'
+    | '/dashboard/create-artifact'
     | '/dashboard/marketplace'
     | '/dashboard/route-a'
     | '/dashboard/route-b'
@@ -451,6 +472,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/dashboard/buy-currency'
+    | '/dashboard/create-artifact'
     | '/dashboard/marketplace'
     | '/dashboard/route-a'
     | '/dashboard/route-b'
@@ -527,6 +549,7 @@ export const routeTree = rootRoute
       "filePath": "dashboard.tsx",
       "children": [
         "/dashboard/buy-currency",
+        "/dashboard/create-artifact",
         "/dashboard/marketplace",
         "/dashboard/route-a",
         "/dashboard/route-b",
@@ -545,6 +568,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/buy-currency": {
       "filePath": "dashboard/buy-currency.tsx",
+      "parent": "/dashboard"
+    },
+    "/dashboard/create-artifact": {
+      "filePath": "dashboard/create-artifact.tsx",
       "parent": "/dashboard"
     },
     "/dashboard/marketplace": {

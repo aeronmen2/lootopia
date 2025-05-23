@@ -1,7 +1,12 @@
-import { Link, Outlet, createFileRoute, redirect } from "@tanstack/react-router"
-import { LayoutDashboard, Map, Settings, FolderOpen, Bell } from "lucide-react"
-import { useAuth } from "@/hooks/useAuth"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  redirect,
+} from '@tanstack/react-router';
+import { LayoutDashboard, Map, Settings, FolderOpen, Bell } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Sidebar,
   SidebarContent,
@@ -12,33 +17,33 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarSeparator,
-} from "@/components/ui/sidebar"
-import { useRole } from "@/hooks/useRole"
+} from '@/components/ui/sidebar';
+import { useRole } from '@/hooks/useRole';
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute('/dashboard')({
   beforeLoad: async ({ context, location }) => {
-    console.log("Dashboard beforeLoad")
-    if (context.auth.loading) return
+    console.log('Dashboard beforeLoad');
+    if (context.auth.loading) return;
     if (!context.auth.isConnected) {
       throw redirect({
-        to: "/",
+        to: '/',
         search: { redirect: location.href },
-      })
+      });
     }
   },
   loader: async ({ context, location }) => {
     if (!context.auth.isConnected) {
-      throw redirect({ to: "/", search: { redirect: location.href } })
+      throw redirect({ to: '/', search: { redirect: location.href } });
     }
-    return { isAuthenticated: context.auth.isConnected }
+    return { isAuthenticated: context.auth.isConnected };
   },
   component: DashboardLayoutComponent,
-})
+});
 
 function DashboardLayoutComponent() {
-  const { user, logout } = useAuth()
+  const { user, logout } = useAuth();
 
-  const canCreateHunt = useRole("admin", "organizer")
+  const canCreateHunt = useRole('admin', 'organizer');
 
   return (
     <SidebarProvider>
@@ -124,6 +129,33 @@ function DashboardLayoutComponent() {
               </SidebarMenuButton>
             </SidebarMenuItem>
 
+            {canCreateHunt && (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  className="bg-red-100 hover:bg-red-200 text-red-800 font-medium px-3 py-2.5 transition-colors"
+                >
+                  <Link to="/dashboard/create-artifact">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="h-5 w-5 mr-3 text-red-600"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M12 16V8M16 12H8M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <span>Creer un Artefact</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
+
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
@@ -191,12 +223,12 @@ function DashboardLayoutComponent() {
             <div className="flex items-center p-4">
               <Avatar className="h-9 w-9 border-2 border-white shadow-sm">
                 <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
-                  {user?.name?.charAt(0) || "U"}
+                  {user?.name?.charAt(0) || 'U'}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col ml-3">
                 <span className="text-sm font-medium">
-                  {user?.name || "User"}
+                  {user?.name || 'User'}
                 </span>
                 <button
                   onClick={() => logout()}
@@ -232,5 +264,5 @@ function DashboardLayoutComponent() {
         </div>
       </div>
     </SidebarProvider>
-  )
+  );
 }

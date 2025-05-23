@@ -1,28 +1,26 @@
-import { useRouter, createFileRoute } from "@tanstack/react-router"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { HuntForm } from "@/components/hunt/huntForm"
-import { huntsApi } from "@/api/hunt"
-import useToast from "@/hooks/useToast"
-import { BackLink } from "@/components/ui/backLink"
-import type { z } from "zod"
-import { huntSchema } from "@/lib/types"
-import { useRole } from "@/hooks/useRole"
-import { useAuth } from "@/hooks/useAuth"
+import { useRouter, createFileRoute } from '@tanstack/react-router';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { HuntForm } from '@/components/hunt/huntForm';
+import { huntsApi } from '@/api/hunt';
+import useToast from '@/hooks/useToast';
+import { BackLink } from '@/components/ui/backLink';
+import type { z } from 'zod';
+import { huntSchema } from '@/lib/types';
+import { useRole } from '@/hooks/useRole';
+import { useAuth } from '@/hooks/useAuth';
 
-export const Route = createFileRoute("/create/")({
+export const Route = createFileRoute('/create/')({
   component: CreateHunt,
-})
+});
 
-type HuntFormData = Omit<z.infer<typeof huntSchema>, "organizerId">
+type HuntFormData = Omit<z.infer<typeof huntSchema>, 'organizerId'>;
 
 function CreateHunt() {
-  const router = useRouter()
-  const { user } = useAuth()
-  const { toast } = useToast()
+  const router = useRouter();
+  const { user } = useAuth();
+  const { toast } = useToast();
 
-  console.log(user)
-
-  const canCreateHunt = useRole("admin", "organizer")
+  const canCreateHunt = useRole('admin', 'organizer');
 
   if (!canCreateHunt) {
     return (
@@ -43,42 +41,42 @@ function CreateHunt() {
           </Card>
         </div>
       </div>
-    )
+    );
   }
 
   const handleSubmit = async (formData: HuntFormData) => {
     if (!user?.id) {
       toast.error({
-        title: "Erreur",
-        message: "Vous devez être connecté pour créer une chasse.",
+        title: 'Erreur',
+        message: 'Vous devez être connecté pour créer une chasse.',
         autoClose: 3000,
-        position: "top-right",
-      })
-      return
+        position: 'top-right',
+      });
+      return;
     }
 
     try {
-      const validatedData = { ...formData, organizerId: user.id }
-      huntSchema.parse(validatedData)
-      await huntsApi.create(validatedData)
+      const validatedData = { ...formData, organizerId: user.id };
+      huntSchema.parse(validatedData);
+      await huntsApi.create(validatedData);
 
       toast.success({
-        title: "Succès !",
-        message: "Chasse au trésor créée avec succès !",
+        title: 'Succès !',
+        message: 'Chasse au trésor créée avec succès !',
         autoClose: 3000,
-        position: "top-right",
-      })
+        position: 'top-right',
+      });
 
-      router.navigate({ to: "/my-hunts" })
+      router.navigate({ to: '/my-hunts' });
     } catch {
       toast.error({
-        title: "Erreur",
-        message: "Une erreur est survenue lors de la création.",
+        title: 'Erreur',
+        message: 'Une erreur est survenue lors de la création.',
         autoClose: 3000,
-        position: "top-right",
-      })
+        position: 'top-right',
+      });
     }
-  }
+  };
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -100,5 +98,5 @@ function CreateHunt() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
