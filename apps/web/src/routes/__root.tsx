@@ -7,7 +7,7 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
 import { AuthContextType } from "@/context/AuthContext"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
-import { CompassIcon, LogOut, User } from "lucide-react"
+import { LogOut, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -39,11 +39,24 @@ function RootComponent() {
 
   return (
     <>
-      {!isDashboard && (
+      {/* {!isDashboard && (
         <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
           <div className="container mx-auto px-6 py-4 flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <CompassIcon className="h-8 w-8 text-black" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M3.02663 7L0.333333 5.41597L2.31846 1.91739L5.01333 3.4987L5.01487 0.333333H8.98513L8.98667 3.4987L11.6815 1.91739L13.6667 5.41597L10.9733 7L13.6667 8.58403L11.6815 12.0826L8.98667 10.5013L8.98513 13.6667H5.01487L5.01333 10.5013L2.31846 12.0826L0.333333 8.58403L3.02663 7Z"
+                  fill="#1C140D"
+                />
+              </svg>
               <span className="font-medium text-xl">Lootopia</span>
             </Link>
 
@@ -126,7 +139,7 @@ function RootComponent() {
             </div>
           </div>
         </nav>
-      )}
+      )} */}
       <Outlet />
       <TanStackRouterDevtools position="top-right" initialIsOpen={false} />
       <ReactQueryDevtools initialIsOpen={false} />
