@@ -3,14 +3,14 @@ import {
   Outlet,
   createRootRouteWithContext,
   useMatches,
-} from "@tanstack/react-router"
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
-import { AuthContextType } from "@/context/AuthContext"
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
-import { CompassIcon, LogOut, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useAuth } from "@/hooks/useAuth"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+} from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { AuthContextType } from '@/context/AuthContext';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { CompassIcon, LogOut, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 import {
   DropdownMenu,
@@ -18,24 +18,24 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 
 interface MyRouterContext {
-  auth: AuthContextType
+  auth: AuthContextType;
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: RootComponent,
-})
+});
 
 function RootComponent() {
-  const { user, isConnected, logout } = useAuth()
+  const { user, isConnected, logout } = useAuth();
 
-  const matches = useMatches()
+  const matches = useMatches();
 
   const isDashboard = matches.some((match) =>
-    match.routeId.includes("/dashboard"),
-  )
+    match.routeId.includes('/dashboard')
+  );
 
   return (
     <>
@@ -80,12 +80,22 @@ function RootComponent() {
                   <DropdownMenuTrigger asChild>
                     <div className="flex items-center space-x-2 cursor-pointer">
                       <Avatar className="h-8 w-8 border border-gray-200">
-                        <AvatarFallback className="bg-gray-100 text-gray-600">
-                          {user.name ? user.name.charAt(0).toUpperCase() : "U"}
-                        </AvatarFallback>
+                        {user.photoUrl ? (
+                          <img
+                            src={user.photoUrl}
+                            alt={user.name || 'User Avatar'}
+                            className="h-full w-full object-cover rounded-full"
+                          />
+                        ) : (
+                          <AvatarFallback className="bg-gray-100 text-gray-600">
+                            {user.name
+                              ? user.name.charAt(0).toUpperCase()
+                              : 'U'}
+                          </AvatarFallback>
+                        )}
                       </Avatar>
                       <span className="text-sm font-medium">
-                        {user.name || "User"}
+                        {user.name || 'User'}
                       </span>
                     </div>
                   </DropdownMenuTrigger>
@@ -131,5 +141,5 @@ function RootComponent() {
       <TanStackRouterDevtools position="top-right" initialIsOpen={false} />
       <ReactQueryDevtools initialIsOpen={false} />
     </>
-  )
+  );
 }

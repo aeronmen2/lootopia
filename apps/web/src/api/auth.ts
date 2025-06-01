@@ -39,9 +39,16 @@ export const authApi = {
   },
 
   update: async (id: string, data: Partial<User>): Promise<User> => {
+    const formData = new FormData()
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value as any)
+      }
+    })
+
     return api(`/api/users/${id}`, {
       method: "PATCH",
-      body: JSON.stringify(data),
+      body: formData,
     })
   },
 

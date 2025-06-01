@@ -46,7 +46,7 @@ export const userSchema = z.object({
   address: z.string().optional(),
 
   // Profile customization
-  photoUrl: z.string().optional(),
+  photoUrl: z.instanceof(File).optional(),
   bio: z.string().max(500, "Bio must be 500 characters or less").optional(),
   website: z.string().optional(),
 

@@ -222,7 +222,18 @@ function DashboardLayoutComponent() {
           <SidebarFooter className="mt-auto border-t">
             <div className="flex items-center p-4">
               <Avatar className="h-9 w-9 border-2 border-white shadow-sm">
-                <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
+                <img
+                  src={
+                    typeof user?.photoUrl === 'string'
+                      ? user.photoUrl
+                      : user?.photoUrl instanceof File
+                        ? URL.createObjectURL(user.photoUrl)
+                        : '/default-avatar.png'
+                  }
+                  alt={user?.name || 'User Avatar'}
+                  className="h-full w-full rounded-full object-cover"
+                />
+                <AvatarFallback className="text-sm">
                   {user?.name?.charAt(0) || 'U'}
                 </AvatarFallback>
               </Avatar>

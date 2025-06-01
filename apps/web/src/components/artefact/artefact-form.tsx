@@ -39,7 +39,6 @@ export default function ArtifactForm() {
   });
 
   async function createArtefact(data: Artefact) {
-    console.log('Creating artefact with data:', data);
     const validatedData = artefactSchema.parse(data);
     // Pass the file to the API
     await artefactApi.create({

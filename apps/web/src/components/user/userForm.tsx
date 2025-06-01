@@ -1,11 +1,11 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "@tanstack/react-router"
-import { useForm } from "react-hook-form"
-import type { z } from "zod"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from '@tanstack/react-router';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -14,16 +14,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card } from "@/components/ui/card"
-import { userSchema } from "@/lib/types"
-import { Loader2, CheckCircle } from "lucide-react"
-import { useAuth } from "@/hooks/useAuth"
-import useToast from "@/hooks/useToast"
-import { authApi } from "@/api/auth"
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card } from '@/components/ui/card';
+import { userSchema } from '@/lib/types';
+import { Loader2, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import useToast from '@/hooks/useToast';
+import { authApi } from '@/api/auth';
 import {
   Dialog,
   DialogContent,
@@ -31,51 +30,76 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog';
 
 type ProfileFormProps = {
-  section: "general" | "contact" | "security"
-}
+  section: 'general' | 'contact' | 'security';
+};
 
 export function UserForm({ section }: ProfileFormProps) {
-  const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const { user } = useAuth()
-  const { toast } = useToast()
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(
+    user?.photoUrl || null
+  );
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   async function handleDeleteAccount() {
-    if (!user || !("id" in user)) return
+    if (!user || !('id' in user)) return;
     try {
-      await authApi.logout()
-      await authApi.delete(user.id)
-      setIsModalOpen(false)
-      toast.success({
-        title: "Succès",
-        message: "Compte supprimé avec succès !",
-      })
-      router.navigate({ to: "/login" })
+      await authApi.logout();
+      if (typeof user.id === 'string') {
+        await authApi.delete(user.id);
+        setIsModalOpen(false);
+        toast.success({
+          title: 'Succès',
+          message: 'Compte supprimé avec succès !',
+        });
+      } else {
+        throw new Error('User ID is missing');
+      }
+      router.navigate({ to: '/login' });
     } catch {
       toast.error({
-        title: "Erreur",
-        message: "Impossible de supprimer le compte.",
-      })
+        title: 'Erreur',
+        message: 'Impossible de supprimer le compte.',
+      });
     }
   }
 
+  // Fonction pour gérer la prévisualisation de l'image
+  const handleAvatarChange = (file: File | null) => {
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      setAvatarFile(file);
+      reader.readAsDataURL(file);
+    }
+  };
+
   // Create a form schema based on the section
   const getFormSchema = () => {
-    if (section === "general") {
-      return userSchema.pick({
-        name: true,
-        lastname: true,
-        username: true,
-        bio: true,
-        website: true,
-        photoUrl: true,
-      })
-    } else if (section === "contact") {
+    if (section === 'general') {
+      // Override photoUrl type to File or undefined
+      return userSchema
+        .pick({
+          name: true,
+          lastname: true,
+          username: true,
+          bio: true,
+          website: true,
+          photoUrl: true,
+        })
+        .extend({
+          photoUrl: z.instanceof(File).optional(),
+        });
+    } else if (section === 'contact') {
       return userSchema.pick({
         email: true,
         phoneNumber: true,
@@ -83,102 +107,122 @@ export function UserForm({ section }: ProfileFormProps) {
         region: true,
         city: true,
         address: true,
-      })
+      });
     } else {
       return userSchema.pick({
         email: true,
         emailVerified: true,
-      })
+      });
     }
-  }
+  };
 
-  const formSchema = getFormSchema()
-  type FormValues = z.infer<typeof formSchema>
+  const formSchema = getFormSchema();
+  type FormValues = z.infer<typeof formSchema>;
 
   // Get the default values for the form based on the section
   const getDefaultValues = () => {
-    if (section === "general") {
+    if (section === 'general') {
       return {
-        name: user?.name || "",
-        lastname: user?.lastname || "",
-        username: user?.username || "",
-        bio: user?.bio || "",
-        website: user?.website || "",
-        photoUrl: user?.photoUrl || "",
-      }
-    } else if (section === "contact") {
+        name: user?.name || '',
+        lastname: user?.lastname || '',
+        username: user?.username || '',
+        bio: user?.bio || '',
+        website: user?.website || '',
+        photoUrl: undefined, // always undefined for file input
+      };
+    } else if (section === 'contact') {
       return {
-        email: user?.email ?? "",
-        phoneNumber: user?.phoneNumber ?? "",
-        country: user?.country ?? "",
-        region: user?.region ?? "",
-        city: user?.city ?? "",
-        address: user?.address ?? "",
-      }
+        email: user?.email ?? '',
+        phoneNumber: user?.phoneNumber ?? '',
+        country: user?.country ?? '',
+        region: user?.region ?? '',
+        city: user?.city ?? '',
+        address: user?.address ?? '',
+      };
     } else {
       return {
-        email: user?.email ?? "",
-        emailVerified: user?.emailVerified ?? "",
-      }
+        email: user?.email ?? '',
+        emailVerified: user?.emailVerified ?? '',
+      };
     }
-  }
+  };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: getDefaultValues(),
-  })
+  });
 
   async function onSubmit(data: FormValues) {
-    setIsSubmitting(true)
-    if (!user || !("id" in user)) return
+    setIsSubmitting(true);
+    if (!user || !('id' in user)) return;
 
     try {
-      await authApi.update(user.id, data)
+      const validatedData = formSchema.parse(data);
+      await authApi.update(user?.id || '', {
+        ...validatedData,
+        ...(section === 'general' && avatarFile ? { file: avatarFile } : {}),
+      });
 
       toast.success({
-        title: "Succès",
-        message: "Profile mis à jour avec succès !",
-      })
-      setIsSuccess(true)
+        title: 'Succès',
+        message: 'Profile mis à jour avec succès !',
+      });
+      setIsSuccess(true);
+      if (section === 'general') {
+        setAvatarFile(null);
+        setAvatarPreview(user?.photoUrl || null);
+      }
     } catch {
-      toast.error({ title: "Erreur", message: "Mise à jour impossible." })
+      toast.error({ title: 'Erreur', message: 'Mise à jour impossible.' });
     }
 
-    setIsSubmitting(false)
-
-    // Reset success message after 3 seconds
-    setTimeout(() => setIsSuccess(false), 3000)
+    setIsSubmitting(false);
+    setTimeout(() => setIsSuccess(false), 3000);
   }
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.log("Validation failed:", errors)
+          console.log('Validation failed:', errors);
         })}
         className="space-y-6"
       >
-        {section === "general" && user && (
+        {section === 'general' && user && (
           <>
             <div className="flex flex-col md:flex-row gap-6 items-start">
-              <Card className="p-4 border border-dashed flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage
-                      src={user.photoUrl || "/placeholder.svg"}
-                      alt={user.name}
-                    />
-                    <AvatarFallback>
-                      {user.name?.charAt(0)}
-                      {user.lastname?.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Button variant="outline" size="sm">
-                    Changer la photo
-                  </Button>
-                </div>
-              </Card>
-
+              <FormField
+                control={form.control}
+                name="photoUrl"
+                render={() => (
+                  <FormItem>
+                    <Card className="p-4 border border-dashed flex items-center justify-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <img
+                          src={avatarPreview || '/placeholder.svg'}
+                          alt="Prévisualisation avatar"
+                          className="w-24 h-24 rounded-full object-cover border"
+                        />
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] || undefined;
+                            handleAvatarChange(file ?? null);
+                            form.setValue('photoUrl', file, {
+                              shouldValidate: true,
+                            });
+                          }}
+                          name="avatar"
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          Changer l'avatar
+                        </span>
+                      </div>
+                    </Card>
+                  </FormItem>
+                )}
+              />
               <div className="grid gap-4 flex-1">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
@@ -267,7 +311,7 @@ export function UserForm({ section }: ProfileFormProps) {
           </>
         )}
 
-        {section === "contact" && (
+        {section === 'contact' && (
           <>
             <FormField
               control={form.control}
@@ -359,7 +403,7 @@ export function UserForm({ section }: ProfileFormProps) {
           </>
         )}
 
-        {section === "security" && user && (
+        {section === 'security' && user && (
           <div className="space-y-4">
             <FormField
               control={form.control}
@@ -453,5 +497,5 @@ export function UserForm({ section }: ProfileFormProps) {
         </Dialog>
       </form>
     </Form>
-  )
+  );
 }
