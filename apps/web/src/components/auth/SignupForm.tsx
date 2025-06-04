@@ -1,122 +1,135 @@
-import { useState } from "react"
-import { useNavigate } from "@tanstack/react-router"
-import { Button } from "@/components/ui/button"
-import { Link } from "@tanstack/react-router"
-import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button"
-import { FormField } from "./FormField"
-import { PasswordField } from "./PasswordField"
-import { PasswordStrengthMeter } from "./PasswordStrengthMeter"
-import { OrDivider } from "./OrDivider"
-import { GoogleSignInButton } from "./button/GoogleButton"
-import { authApi } from "../../api/auth"
+import { useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
+import { Button } from '@/components/ui/button';
+import { Link } from '@tanstack/react-router';
+import { InteractiveHoverButton } from '@/components/magicui/interactive-hover-button';
+import { FormField } from './FormField';
+import { PasswordField } from './PasswordField';
+import { PasswordStrengthMeter } from './PasswordStrengthMeter';
+import { OrDivider } from './OrDivider';
+import { GoogleSignInButton } from './button/GoogleButton';
+import { authApi } from '../../api/auth';
+import { mockAuthApi } from '../../api/mockAuth';
+import { DemoHelper } from '../demo/DemoHelper';
 
 export function SignupForm() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  // Demo mode - set to true for presentations
+  const DEMO_MODE =
+    process.env.NODE_ENV === 'development' ||
+    window.location.search.includes('demo=true');
+  const api = DEMO_MODE ? mockAuthApi : authApi;
 
   const [form, setForm] = useState({
-    email: "",
-    username: "",
-    password: "",
-    rePassword: "",
-  })
+    email: '',
+    username: '',
+    password: '',
+    rePassword: '',
+  });
 
   const [errors, setErrors] = useState({
-    email: "",
-    username: "",
-    password: "",
-    rePassword: "",
-  })
+    email: '',
+    username: '',
+    password: '',
+    rePassword: '',
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [signupError, setSignupError] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [signupError, setSignupError] = useState('');
 
   const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const validatePassword = (password: string) => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
-    return passwordRegex.test(password)
-  }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return passwordRegex.test(password);
+  };
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target
-    setForm({ ...form, [name]: value })
-    setErrors({ ...errors, [name]: "" })
-    setSignupError("")
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    setErrors({ ...errors, [name]: '' });
+    setSignupError('');
   }
 
   function validateForm() {
     const newErrors = {
-      email: "",
-      username: "",
-      password: "",
-      rePassword: "",
-    }
-    let isValid = true
+      email: '',
+      username: '',
+      password: '',
+      rePassword: '',
+    };
+    let isValid = true;
 
     if (!validateEmail(form.email)) {
-      newErrors.email = "Please enter a valid email address"
-      isValid = false
+      newErrors.email = 'Please enter a valid email address';
+      isValid = false;
     }
 
     if (form.username.length < 3) {
-      newErrors.username = "Username must be at least 3 characters"
-      isValid = false
+      newErrors.username = 'Username must be at least 3 characters';
+      isValid = false;
     }
 
     if (!validatePassword(form.password)) {
       newErrors.password =
-        "Password must contain at least 8 characters, including uppercase, lowercase, and numbers"
-      isValid = false
+        'Password must contain at least 8 characters, including uppercase, lowercase, and numbers';
+      isValid = false;
     }
 
     if (form.password !== form.rePassword) {
-      newErrors.rePassword = "Passwords do not match"
-      isValid = false
+      newErrors.rePassword = 'Passwords do not match';
+      isValid = false;
     }
 
-    setErrors(newErrors)
-    return isValid
+    setErrors(newErrors);
+    return isValid;
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+    e.preventDefault();
     if (!validateForm()) {
-      return
+      return;
     }
 
-    setIsSubmitting(true)
-    setSignupError("")
+    setIsSubmitting(true);
+    setSignupError('');
 
     try {
-      const result = await authApi.signup(
-        form.username,
-        form.email,
-        form.password,
-      )
-      console.log(result)
-      navigate({ to: "/verify/$email", params: { email: form.email } })
-    } catch {
-      setSignupError(
-        "An error occurred while creating your account. Please try again.",
-      )
+      const result = await api.signup(form.username, form.email, form.password);
+      console.log(result);
+      navigate({ to: '/verify/$email', params: { email: form.email } });
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'An error occurred while creating your account. Please try again.';
+      setSignupError(errorMessage);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
   function handleGoogleSignIn() {
-    window.location.href = `${process.env.API_URL || "http://localhost:3000"}/api/auth/google`
+    window.location.href = `${process.env.API_URL || 'http://localhost:3000'}/api/auth/google`;
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-svh bg-gray-50 p-4">
       <div className="w-full max-w-md">
+        {DEMO_MODE && <DemoHelper />}
+
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold mb-2">Create an Account</h1>
           <p className="text-gray-600">Join us by filling out the form below</p>
+          {DEMO_MODE && (
+            <div className="mt-2 text-xs text-blue-600 bg-blue-100 px-3 py-1 rounded-full inline-block">
+              🎭 Demo Mode Active
+            </div>
+          )}
         </div>
 
         <form
@@ -191,7 +204,7 @@ export function SignupForm() {
               className="hover:cursor-pointer w-full"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Creating Account..." : "Create Account"}
+              {isSubmitting ? 'Creating Account...' : 'Create Account'}
             </Button>
           </div>
 
@@ -209,5 +222,5 @@ export function SignupForm() {
         </div>
       </div>
     </div>
-  )
+  );
 }

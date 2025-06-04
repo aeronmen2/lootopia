@@ -12,8 +12,11 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SignupImport } from './routes/signup'
+import { Route as ShopImport } from './routes/shop'
 import { Route as LoginImport } from './routes/login'
+import { Route as HuntsImport } from './routes/hunts'
 import { Route as DashboardImport } from './routes/dashboard'
+import { Route as ArtefactsImport } from './routes/artefacts'
 import { Route as IndexImport } from './routes/index'
 import { Route as UserIndexImport } from './routes/user/index'
 import { Route as MyHuntsIndexImport } from './routes/my-hunts/index'
@@ -41,15 +44,33 @@ const SignupRoute = SignupImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const ShopRoute = ShopImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRoute,
 } as any)
 
+const HuntsRoute = HuntsImport.update({
+  id: '/hunts',
+  path: '/hunts',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const DashboardRoute = DashboardImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ArtefactsRoute = ArtefactsImport.update({
+  id: '/artefacts',
+  path: '/artefacts',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -172,6 +193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/artefacts': {
+      id: '/artefacts'
+      path: '/artefacts'
+      fullPath: '/artefacts'
+      preLoaderRoute: typeof ArtefactsImport
+      parentRoute: typeof rootRoute
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -179,11 +207,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
     }
+    '/hunts': {
+      id: '/hunts'
+      path: '/hunts'
+      fullPath: '/hunts'
+      preLoaderRoute: typeof HuntsImport
+      parentRoute: typeof rootRoute
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopImport
       parentRoute: typeof rootRoute
     }
     '/signup': {
@@ -349,8 +391,11 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/artefacts': typeof ArtefactsRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/hunts': typeof HuntsRoute
   '/login': typeof LoginRoute
+  '/shop': typeof ShopRoute
   '/signup': typeof SignupRoute
   '/dashboard/buy-currency': typeof DashboardBuyCurrencyRoute
   '/dashboard/create-artifact': typeof DashboardCreateArtifactRoute
@@ -373,7 +418,10 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/artefacts': typeof ArtefactsRoute
+  '/hunts': typeof HuntsRoute
   '/login': typeof LoginRoute
+  '/shop': typeof ShopRoute
   '/signup': typeof SignupRoute
   '/dashboard/buy-currency': typeof DashboardBuyCurrencyRoute
   '/dashboard/create-artifact': typeof DashboardCreateArtifactRoute
@@ -397,8 +445,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/artefacts': typeof ArtefactsRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/hunts': typeof HuntsRoute
   '/login': typeof LoginRoute
+  '/shop': typeof ShopRoute
   '/signup': typeof SignupRoute
   '/dashboard/buy-currency': typeof DashboardBuyCurrencyRoute
   '/dashboard/create-artifact': typeof DashboardCreateArtifactRoute
@@ -423,8 +474,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/artefacts'
     | '/dashboard'
+    | '/hunts'
     | '/login'
+    | '/shop'
     | '/signup'
     | '/dashboard/buy-currency'
     | '/dashboard/create-artifact'
@@ -446,7 +500,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/artefacts'
+    | '/hunts'
     | '/login'
+    | '/shop'
     | '/signup'
     | '/dashboard/buy-currency'
     | '/dashboard/create-artifact'
@@ -468,8 +525,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/artefacts'
     | '/dashboard'
+    | '/hunts'
     | '/login'
+    | '/shop'
     | '/signup'
     | '/dashboard/buy-currency'
     | '/dashboard/create-artifact'
@@ -493,8 +553,11 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ArtefactsRoute: typeof ArtefactsRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  HuntsRoute: typeof HuntsRoute
   LoginRoute: typeof LoginRoute
+  ShopRoute: typeof ShopRoute
   SignupRoute: typeof SignupRoute
   EditHuntIdRoute: typeof EditHuntIdRoute
   HuntHuntIdRoute: typeof HuntHuntIdRoute
@@ -507,8 +570,11 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ArtefactsRoute: ArtefactsRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  HuntsRoute: HuntsRoute,
   LoginRoute: LoginRoute,
+  ShopRoute: ShopRoute,
   SignupRoute: SignupRoute,
   EditHuntIdRoute: EditHuntIdRoute,
   HuntHuntIdRoute: HuntHuntIdRoute,
@@ -530,8 +596,11 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/artefacts",
         "/dashboard",
+        "/hunts",
         "/login",
+        "/shop",
         "/signup",
         "/edit/$huntId",
         "/hunt/$huntId",
@@ -544,6 +613,9 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/artefacts": {
+      "filePath": "artefacts.tsx"
     },
     "/dashboard": {
       "filePath": "dashboard.tsx",
@@ -560,8 +632,14 @@ export const routeTree = rootRoute
         "/dashboard/payment/"
       ]
     },
+    "/hunts": {
+      "filePath": "hunts.tsx"
+    },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/shop": {
+      "filePath": "shop.tsx"
     },
     "/signup": {
       "filePath": "signup.tsx"

@@ -1,14 +1,14 @@
-import Hero from "@/components/hero/hero-section"
-import { createFileRoute } from "@tanstack/react-router"
+import Hero from '@/components/hero/hero-section';
+import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute('/')({
   component: Home,
-})
+});
 
 function Home() {
   return (
-    <div className="p-2">
+    <div className="h-screen w-full overflow-hidden">
       <Hero />
     </div>
-  )
+  );
 }

@@ -182,6 +182,42 @@ function DashboardLayoutComponent() {
             </SidebarMenuItem>
 
             <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                className="bg-purple-100 hover:bg-purple-200 text-purple-800 font-medium px-3 py-2.5 transition-colors"
+              >
+                <Link to="/shop">
+                  <span className="h-5 w-5 mr-3 text-purple-600">👑</span>
+                  <span>Crown Shop</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                className="bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium px-3 py-2.5 transition-colors"
+              >
+                <Link to="/my-artefacts">
+                  <span className="h-5 w-5 mr-3 text-amber-600">🏺</span>
+                  <span>My Collection</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                className="bg-green-100 hover:bg-green-200 text-green-800 font-medium px-3 py-2.5 transition-colors"
+              >
+                <Link to="/artefacts">
+                  <span className="h-5 w-5 mr-3 text-green-600">🏪</span>
+                  <span>Marketplace</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
               <SidebarMenuButton asChild className="px-3 py-2.5 font-medium">
                 <Link to="/dashboard/transactions">
                   <svg
