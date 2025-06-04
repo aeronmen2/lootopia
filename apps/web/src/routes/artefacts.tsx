@@ -1,14 +1,14 @@
-import ArtefactsSection from '@/components/artefacts/artefacts-section';
+import MyArtefactsSection from '@/components/artefacts/my-artefacts-section';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/artefacts')({
-  component: ArtefactsPage,
+  component: ArtefactsePage,
 });
 
-function ArtefactsPage() {
+function ArtefactsePage() {
   return (
     <div className="h-screen">
-      <ArtefactsSection />
+      <MyArtefactsSection />
     </div>
   );
 }

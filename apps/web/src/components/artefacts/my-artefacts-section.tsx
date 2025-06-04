@@ -37,12 +37,14 @@ type PersonalArtefact = {
   discoveryDate: string;
   acquiredDate: string;
   acquiredPrice?: number;
+  salePrice?: number;
   ownershipHistory: Array<{
     owner: string;
     date: string;
     price?: number;
     action: 'discovered' | 'purchased' | 'traded';
   }>;
+  isForSale?: boolean;
 };
 
 const MY_ARTEFACTS: PersonalArtefact[] = [
@@ -57,6 +59,7 @@ const MY_ARTEFACTS: PersonalArtefact[] = [
     hunt: 'Caribbean Treasure Hunt',
     discoveryDate: '2024-01-15',
     acquiredDate: '2024-01-15',
+    salePrice: 350,
     ownershipHistory: [
       { owner: 'Captain Morgan', date: '2024-01-15', action: 'discovered' },
     ],
@@ -72,6 +75,7 @@ const MY_ARTEFACTS: PersonalArtefact[] = [
     hunt: 'Crystal Caves Adventure',
     discoveryDate: '2024-02-15',
     acquiredDate: '2024-02-15',
+    salePrice: 120,
     ownershipHistory: [
       { owner: 'You', date: '2024-02-15', action: 'discovered' },
     ],
@@ -88,6 +92,7 @@ const MY_ARTEFACTS: PersonalArtefact[] = [
     discoveryDate: '2024-01-28',
     acquiredDate: '2024-02-05',
     acquiredPrice: 150,
+    salePrice: 90,
     ownershipHistory: [
       { owner: 'Nordic Hunter', date: '2024-01-28', action: 'discovered' },
       { owner: 'You', date: '2024-02-05', price: 150, action: 'purchased' },
@@ -105,6 +110,7 @@ const MY_ARTEFACTS: PersonalArtefact[] = [
     discoveryDate: '2024-02-28',
     acquiredDate: '2024-03-02',
     acquiredPrice: 50,
+    salePrice: 30,
     ownershipHistory: [
       { owner: 'Map Collector', date: '2024-02-28', action: 'discovered' },
       { owner: 'You', date: '2024-03-02', price: 50, action: 'purchased' },
@@ -121,6 +127,7 @@ const MY_ARTEFACTS: PersonalArtefact[] = [
     hunt: 'Mountain Cave Quest',
     discoveryDate: '2024-01-20',
     acquiredDate: '2024-01-20',
+    salePrice: 500,
     ownershipHistory: [
       { owner: 'You', date: '2024-01-20', action: 'discovered' },
     ],
@@ -136,6 +143,7 @@ const MY_ARTEFACTS: PersonalArtefact[] = [
     hunt: 'Lunar Temple Hunt',
     discoveryDate: '2024-03-05',
     acquiredDate: '2024-03-05',
+    salePrice: 60,
     ownershipHistory: [
       { owner: 'You', date: '2024-03-05', action: 'discovered' },
     ],
@@ -148,6 +156,13 @@ export default function MyArtefactsSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedArtefact, setSelectedArtefact] =
     useState<PersonalArtefact | null>(null);
+  const [artefacts, setArtefacts] = useState(MY_ARTEFACTS);
+  const [sellingId, setSellingId] = useState<string | null>(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [artefactToSell, setArtefactToSell] = useState<PersonalArtefact | null>(
+    null
+  );
+  const FIXED_PRICE = 100; // prix fixe pour la vente
   const itemsPerPage = 9;
 
   const rarityColors = {
@@ -158,7 +173,7 @@ export default function MyArtefactsSection() {
   };
 
   // Filter artefacts based on search and rarity
-  const filteredArtefacts = MY_ARTEFACTS.filter((artefact) => {
+  const filteredArtefacts = artefacts.filter((artefact) => {
     const matchesSearch =
       artefact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       artefact.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -181,6 +196,14 @@ export default function MyArtefactsSection() {
       month: 'short',
       day: 'numeric',
     });
+  };
+
+  // Ajout de la fonction de vente
+  const handleSell = (id: string) => {
+    setArtefacts((prev) => prev.filter((a) => a.id !== id));
+    setSellingId(null);
+    setConfirmDialogOpen(false);
+    setArtefactToSell(null);
   };
 
   return (
@@ -318,7 +341,7 @@ export default function MyArtefactsSection() {
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="pt-2 pb-4">
+                  <CardFooter className="pt-2 pb-4 flex flex-col gap-2">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
@@ -435,12 +458,52 @@ export default function MyArtefactsSection() {
                         )}
                       </DialogContent>
                     </Dialog>
+                    <Button
+                      className="w-full bg-black text-white hover:bg-gray-800 text-xs"
+                      onClick={() => {
+                        setArtefactToSell(artefact);
+                        setConfirmDialogOpen(true);
+                      }}
+                    >
+                      {`Vendre cet artefact pour 👑 ${artefact.salePrice ?? FIXED_PRICE}`}
+                    </Button>
                   </CardFooter>
                 </Card>
               ))}
             </div>
           </div>
-
+          {/* Dialog de confirmation de vente */}
+          <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>
+                  Êtes-vous sûr de vouloir vendre cet artefact ?
+                </DialogTitle>
+                <DialogDescription>
+                  Cette action est irréversible. L'artefact sera vendu pour un
+                  prix fixe de 👑 {FIXED_PRICE} et disparaîtra de votre
+                  collection.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex gap-2 mt-4">
+                <Button
+                  className="flex-1 bg-gray-200 text-gray-800 hover:bg-gray-300"
+                  variant="outline"
+                  onClick={() => setConfirmDialogOpen(false)}
+                >
+                  Annuler
+                </Button>
+                <Button
+                  className="flex-1 bg-black text-white hover:bg-gray-800"
+                  onClick={() =>
+                    artefactToSell && handleSell(artefactToSell.id)
+                  }
+                >
+                  Confirmer la vente
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="border-t border-gray-200 px-8 py-4 bg-white">

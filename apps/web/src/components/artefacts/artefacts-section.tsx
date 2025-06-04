@@ -24,6 +24,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import useToast from '@/hooks/useToast';
+import { useBalance } from '@/hooks/query/useBalanceQuery';
 
 // Mock artefact data
 type Artefact = {
@@ -258,10 +260,15 @@ const ArtefactsSection = () => {
   const [selectedArtefact, setSelectedArtefact] = useState<Artefact | null>(
     null
   );
+  const [artefacts, setArtefacts] = useState(MOCK_ARTEFACTS); // Pour gérer l'état d'achat
+  const [buying, setBuying] = useState(false);
+  const [buySuccess, setBuySuccess] = useState(false);
+  const { toast } = useToast();
+  const { data: balanceData, refetch: refetchBalance } = useBalance();
   const itemsPerPage = 9;
 
   // Filter artefacts based on search and rarity
-  const filteredArtefacts = MOCK_ARTEFACTS.filter((artefact) => {
+  const filteredArtefacts = artefacts.filter((artefact) => {
     const matchesSearch =
       artefact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       artefact.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -286,8 +293,56 @@ const ArtefactsSection = () => {
     });
   };
 
+  // Gestion de l'achat
+  const handleBuy = (artefact: Artefact) => {
+    setBuying(true);
+    setTimeout(() => {
+      setArtefacts((prev) =>
+        prev.map((a) =>
+          a.id === artefact.id
+            ? {
+                ...a,
+                isForSale: false,
+                currentOwner: 'You',
+                ownershipHistory: [
+                  ...a.ownershipHistory,
+                  {
+                    owner: 'You',
+                    date: new Date().toISOString(),
+                    price: a.price,
+                    action: 'purchased',
+                  },
+                ],
+              }
+            : a
+        )
+      );
+      setBuySuccess(true);
+      setBuying(false);
+      toast.success({
+        title: 'Succès !',
+        message: `Vous avez acheté l'artefact « ${artefact.name} » !`,
+        autoClose: 3000,
+        position: 'top-right',
+      });
+      // Met à jour le solde après l'achat
+      refetchBalance();
+    }, 1200);
+  };
+
   return (
     <section className="relative h-screen pt-20 bg-white overflow-hidden">
+      {/* Solde couronne en bas à gauche */}
+      <div className="fixed bottom-6 left-6 z-50">
+        <div className="inline-flex items-center space-x-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 shadow-lg">
+          <span className="text-yellow-500 text-lg">👑</span>
+          <span className="text-gray-700 font-medium">Solde :</span>
+          <span className="text-xl font-bold text-gray-900">
+            {balanceData ?? 0}
+          </span>
+          <span className="text-gray-600">couronnes</span>
+        </div>
+      </div>
       <div className="relative z-10 h-full flex">
         {/* Left Sidebar - Filters */}
         <div className="w-80 border-r border-gray-200 p-6 flex flex-col">
@@ -345,6 +400,13 @@ const ArtefactsSection = () => {
                 <Card
                   key={artefact.id}
                   className="cursor-pointer transition-all duration-300 bg-white border border-gray-200 hover:border-gray-300 hover:scale-105 hover:shadow-2xl shadow-lg group rounded-xl overflow-hidden"
+                  onClick={() => {
+                    setSelectedArtefact(artefact);
+                    setBuySuccess(false);
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`View details for ${artefact.name}`}
                 >
                   <CardHeader className="relative pb-3">
                     {artefact.imageUrl && (
@@ -498,6 +560,126 @@ const ArtefactsSection = () => {
           </div>
         </div>
       </div>
+      {/* Modal de détails et achat */}
+      <Dialog
+        open={!!selectedArtefact}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedArtefact(null);
+            setBuySuccess(false);
+            setBuying(false);
+          }
+        }}
+      >
+        <DialogContent className="max-w-lg">
+          {selectedArtefact && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{selectedArtefact.name}</DialogTitle>
+                <DialogDescription>
+                  {selectedArtefact.description}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mb-4">
+                {selectedArtefact.imageUrl && (
+                  <img
+                    src={selectedArtefact.imageUrl}
+                    alt={selectedArtefact.name}
+                    className="w-full h-64 object-cover rounded-lg mb-4"
+                  />
+                )}
+                <div className="flex items-center gap-2 mb-2">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-bold border ${rarityColors[selectedArtefact.rarity]}`}
+                  >
+                    {selectedArtefact.rarity.toUpperCase()}
+                  </span>
+                  {selectedArtefact.isForSale && (
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold">
+                      FOR SALE
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-gray-600 mb-2">
+                  Discovered by:{' '}
+                  <span className="font-medium text-gray-900">
+                    {selectedArtefact.discoveredBy}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-600 mb-2">
+                  Current Owner:{' '}
+                  <span className="font-medium text-gray-900">
+                    {selectedArtefact.currentOwner}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-600 mb-2">
+                  Hunt:{' '}
+                  <span className="font-medium text-gray-900">
+                    {selectedArtefact.hunt}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-600 mb-2">
+                  Discovery Date:{' '}
+                  <span className="font-medium text-gray-900">
+                    {formatDate(selectedArtefact.discoveryDate)}
+                  </span>
+                </div>
+                {selectedArtefact.isForSale && selectedArtefact.price && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-gray-500">Price:</span>
+                    <span className="text-lg font-bold text-green-600">
+                      👑 {selectedArtefact.price}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="mb-4">
+                <h4 className="font-semibold mb-2">Ownership History</h4>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {selectedArtefact.ownershipHistory.map((entry, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                    >
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {entry.owner}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {entry.action.charAt(0).toUpperCase() +
+                            entry.action.slice(1)}{' '}
+                          on {formatDate(entry.date)}
+                        </p>
+                      </div>
+                      {entry.price && (
+                        <span className="text-green-600 font-bold">
+                          ${entry.price}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Achat */}
+              {selectedArtefact.isForSale ? (
+                <Button
+                  className="w-full bg-black text-white hover:bg-gray-800 mt-2"
+                  onClick={() => handleBuy(selectedArtefact)}
+                  disabled={buying}
+                >
+                  {buying
+                    ? 'Processing...'
+                    : `Buy for 👑 ${selectedArtefact.price}`}
+                </Button>
+              ) : buySuccess ? (
+                <div className="w-full text-center text-green-600 font-bold py-2">
+                  Purchase successful! You are now the owner.
+                </div>
+              ) : null}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
